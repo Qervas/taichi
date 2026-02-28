@@ -214,8 +214,51 @@
     .card.c-slides::before         { background: linear-gradient(90deg, var(--amber),   transparent 70%); }
     .card.c-code::before           { background: linear-gradient(90deg, var(--violet),  transparent 70%); }
 
-    .vid-block { background: #000; border-bottom: 1px solid var(--border); }
-    .vid-block video { width: 100%; display: block; max-height: 360px; object-fit: contain; }
+    /* ── Video thumbnail ── */
+    .vid-thumb {
+      position: relative; background: #000;
+      border-bottom: 1px solid var(--border); cursor: pointer; overflow: hidden;
+    }
+    .vid-thumb img {
+      width: 100%; display: block; max-height: 280px; object-fit: cover;
+      transition: transform .35s ease, filter .35s ease;
+      filter: brightness(.8);
+    }
+    .vid-thumb:hover img { transform: scale(1.03); filter: brightness(.55); }
+    .vid-play-wrap {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: .55rem; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .vid-play-btn {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(0,212,255,.18); border: 2px solid var(--cyan);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white); box-shadow: 0 0 28px rgba(0,212,255,.35);
+      transition: background .2s, box-shadow .2s, transform .2s;
+    }
+    .vid-thumb:hover .vid-play-btn {
+      background: rgba(0,212,255,.32); transform: scale(1.08);
+      box-shadow: 0 0 40px rgba(0,212,255,.55);
+    }
+    .vid-play-label {
+      font-family: var(--ff-mono); font-size: .6rem; letter-spacing: .12em;
+      text-transform: uppercase; color: rgba(255,255,255,.7);
+    }
+
+    /* ── Video modal ── */
+    .vid-overlay { z-index: 300; }
+    .vid-modal {
+      width: min(94vw, 960px);
+      background: #000; border: 1px solid var(--border-h); border-radius: 10px;
+      box-shadow: 0 0 80px rgba(0,212,255,.12), 0 24px 64px rgba(0,0,0,.8);
+      display: flex; flex-direction: column; overflow: hidden;
+      animation: modalIn .22s ease both;
+    }
+    .vid-modal-body { background: #000; line-height: 0; }
+    .vid-modal-body video { width: 100%; display: block; max-height: 72vh; }
 
     .card-body { padding: 1.2rem 1.4rem; }
     .card-meta { display: flex; align-items: center; gap: .65rem; margin-bottom: .7rem; flex-wrap: wrap; }
@@ -290,13 +333,16 @@
       content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
       background: var(--amber); box-shadow: 0 0 6px var(--amber);
     }
-    .modal-close {
+    .modal-actions { display: flex; align-items: center; gap: .4rem; }
+    .modal-close, .modal-fs {
       background: none; border: 1px solid var(--border); color: var(--text-dim);
-      width: 28px; height: 28px; border-radius: 4px; cursor: pointer; font-size: 1rem;
+      width: 28px; height: 28px; border-radius: 4px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: color .15s, border-color .15s, background .15s;
     }
+    .modal-close { font-size: 1rem; }
     .modal-close:hover { color: var(--white); border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.06); }
+    .modal-fs:hover { color: var(--cyan); border-color: var(--cyan-dim); background: var(--cyan-glow); }
     .modal-body { flex: 1; position: relative; background: #000; }
     .modal-body iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
     .modal-loading {
@@ -421,11 +467,15 @@
             :class="post.categories.map(c => 'c-' + c)"
             :style="{ animationDelay: idx * 0.07 + 's' }"
           >
-            <!-- Video -->
-            <div v-if="post.video" class="vid-block">
-              <video controls preload="none" playsinline>
-                <source :src="post.video" type="video/mp4">
-              </video>
+            <!-- Video thumbnail -->
+            <div v-if="post.video" class="vid-thumb" @click="openVideo(post)" role="button" tabindex="0" :aria-label="'Play ' + post.title">
+              <img :src="post.thumb" alt="" loading="lazy">
+              <div class="vid-play-wrap">
+                <div class="vid-play-btn">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>
+                </div>
+                <span class="vid-play-label">Play video</span>
+              </div>
             </div>
 
             <!-- Body -->
@@ -467,10 +517,15 @@
   <!-- ══════════════════════════════════════════ SLIDES MODAL -->
   <transition name="fade">
     <div v-if="modal.open" class="modal-backdrop" @click.self="closeModal">
-      <div class="modal">
+      <div class="modal" ref="slidesModalEl">
         <div class="modal-bar">
           <span class="modal-title">{{ modal.title }}</span>
-          <button class="modal-close" @click="closeModal">✕</button>
+          <div class="modal-actions">
+            <button class="modal-fs" @click="toggleSlidesFullscreen" title="Fullscreen">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M8 21H5a2 2 0 01-2-2v-3M16 21h3a2 2 0 002-2v-3"/></svg>
+            </button>
+            <button class="modal-close" @click="closeModal">✕</button>
+          </div>
         </div>
         <div class="modal-body">
           <div v-if="!modal.loaded" class="modal-loading">
@@ -488,13 +543,28 @@
     </div>
   </transition>
 
+  <!-- ══════════════════════════════════════════ VIDEO MODAL -->
+  <transition name="fade">
+    <div v-if="videoModal.open" class="modal-backdrop vid-overlay" @click.self="closeVideo">
+      <div class="vid-modal">
+        <div class="modal-bar">
+          <span class="modal-title">{{ videoModal.title }}</span>
+          <button class="modal-close" @click="closeVideo">✕</button>
+        </div>
+        <div class="vid-modal-body">
+          <video controls autoplay playsinline :src="videoModal.url"></video>
+        </div>
+      </div>
+    </div>
+  </transition>
+
 </div><!-- #app -->
 
 <script>
 // Vue is loaded with defer; this inline script runs after it because it's
 // at the bottom of <body> — but guard anyway for robustness.
 document.addEventListener("DOMContentLoaded", function () {
-const { createApp, ref, computed, reactive, onMounted, onUnmounted } = Vue;
+const { createApp, ref, computed, reactive, onMounted, onUnmounted, nextTick } = Vue;
 
 /* ━━━━━━━━━━━━━━━━━━━━ STATIC DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const POSTS = [
@@ -504,9 +574,11 @@ const POSTS = [
     title: "Smoke Simulation",
     subtitle: "2D Eulerian — MAC Grid · MacCormack Advection · Red-Black Gauss-Seidel",
     date: "2026-02-24",
-    categories: ["slides"],
+    categories: ["slides", "vids"],
     description:
       "Kick-off of the series. Builds a real-time 2D smoke simulation from scratch on a 512×512 MAC staggered grid. Covers MacCormack advection with RK3 backtracing, Red-Black Gauss-Seidel pressure projection, buoyancy, and vorticity confinement.",
+    video: "videos/smoke_simulation.mp4",
+    thumb: "videos/thumbs/smoke_simulation.jpg",
     slides: "slides-dist/phase1/index.html",
   },
   {
@@ -525,11 +597,12 @@ const POSTS = [
     phase: "Phase 02",
     title: "2D Water Dam Break",
     subtitle: "Weakly compressible MLS-MPM with EOS pressure",
-    date: "2026-02-26",
+    date: "2026-02-25",
     categories: ["code", "vids", "slides"],
     description:
       "A 2D dam-break simulation on a 128×128 collocated grid with ~50 K water particles (4 per cell). Pressure is computed per-particle via a two-sided equation of state — p = K(1 − J) — resisting both compression and expansion. The APIC affine matrix C doubles as the velocity gradient, giving accurate angular-momentum conservation at zero extra cost.",
-    video: "videos/mlsmpm1.mp4",
+    video: "videos/water_simulation_2d.mp4",
+    thumb: "videos/thumbs/water_simulation_2d.jpg",
     slides: "slides-dist/phase2/index.html",
     code: "https://github.com/Qervas/taichi/blob/main/src/phase2_water.py",
   },
@@ -542,7 +615,8 @@ const POSTS = [
     categories: ["code", "vids", "slides"],
     description:
       "A wall of water impacts four bridge pillars on a 64³ grid (270 K particles: 248 K water + 21.6 K solid). Solid uses Drucker-Prager elastoplasticity with SVD-based return mapping. Damage accumulates as yield strain exceeds a threshold, progressively degrading cohesion and triggering cascading shattering. Water and solid couple automatically through the shared MPM grid — no explicit coupling terms needed.",
-    video: "videos/mlsmpm2.mp4",
+    video: "videos/water_simulation_3d_pillars.mp4",
+    thumb: "videos/thumbs/water_simulation_3d_pillars.jpg",
     slides: "slides-dist/phase2/index.html",
     code: "https://github.com/Qervas/taichi/blob/main/src/phase3_3d.py",
   },
@@ -617,6 +691,14 @@ createApp({
       loaded: false,
     });
 
+    const videoModal = reactive({
+      open:  false,
+      title: "",
+      url:   "",
+    });
+
+    const slidesModalEl = ref(null);
+
     /* ── Calendar computed ── */
     const calMonthLabel = computed(() => `${MONTHS[calMonth.value]} ${calYear.value}`);
 
@@ -676,10 +758,35 @@ createApp({
     function closeModal() {
       modal.open  = false;
       modal.url   = "";       // unload iframe
+      if (document.fullscreenElement) document.exitFullscreen();
     }
 
-    /* ── ESC to close modal ── */
-    function onKey(e) { if (e.key === "Escape") closeModal(); }
+    async function toggleSlidesFullscreen() {
+      if (!document.fullscreenElement) {
+        await nextTick();
+        slidesModalEl.value?.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function openVideo(post) {
+      videoModal.title = `${post.phase} — ${post.title}`;
+      videoModal.url   = post.video;
+      videoModal.open  = true;
+    }
+    function closeVideo() {
+      videoModal.open = false;
+      videoModal.url  = "";
+    }
+
+    /* ── ESC to close any modal ── */
+    function onKey(e) {
+      if (e.key === "Escape") {
+        if (videoModal.open) closeVideo();
+        else closeModal();
+      }
+    }
     onMounted(()   => window.addEventListener("keydown", onKey));
     onUnmounted(() => window.removeEventListener("keydown", onKey));
 
@@ -687,11 +794,14 @@ createApp({
       /* data */
       STATS, CATS, ICONS, DOW, POSTS,
       /* state */
-      activeCat, activeDate, calYear, calMonth, modal,
+      activeCat, activeDate, calYear, calMonth, modal, videoModal, slidesModalEl,
       /* computed */
       calMonthLabel, calDays, filteredPosts, resultsMeta,
       /* methods */
-      prevMonth, nextMonth, toggleDate, openSlides, closeModal, fmtDate,
+      prevMonth, nextMonth, toggleDate,
+      openSlides, closeModal, toggleSlidesFullscreen,
+      openVideo, closeVideo,
+      fmtDate,
     };
   }
 }).mount("#app");
