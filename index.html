@@ -7,33 +7,31 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Syne:wght@500;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
-    /* ─── Design Tokens ────────────────────────────────────────────── */
+    /* ─── Tokens ────────────────────────────────────────────────────── */
     :root {
-      --bg:          #080d1a;
-      --bg-2:        #0c1221;
-      --bg-card:     #0e1526;
-      --border:      rgba(0,212,255,.1);
-      --border-h:    rgba(0,212,255,.32);
-      --cyan:        #00d4ff;
-      --cyan-dim:    rgba(0,212,255,.55);
-      --cyan-glow:   rgba(0,212,255,.12);
-      --amber:       #f59e0b;
-      --violet:      #a78bfa;
-      --emerald:     #34d399;
-      --text:        #b8ccde;
-      --text-dim:    #5a7590;
-      --text-muted:  #2e4258;
-      --white:       #eaf4ff;
-      --ff-disp:  'Orbitron',  monospace;
-      --ff-head:  'Syne',      sans-serif;
-      --ff-mono:  'JetBrains Mono', monospace;
-      --ff-body:  'DM Sans',   sans-serif;
+      --bg:        #080d1a;
+      --bg-card:   #0e1526;
+      --border:    rgba(0,212,255,.1);
+      --border-h:  rgba(0,212,255,.32);
+      --cyan:      #00d4ff;
+      --cyan-dim:  rgba(0,212,255,.55);
+      --cyan-glow: rgba(0,212,255,.12);
+      --amber:     #f59e0b;
+      --violet:    #a78bfa;
+      --emerald:   #34d399;
+      --text:      #b8ccde;
+      --text-dim:  #5a7590;
+      --text-muted:#2e4258;
+      --white:     #eaf4ff;
+      --ff-disp:   'Orbitron', monospace;
+      --ff-head:   'Syne', sans-serif;
+      --ff-mono:   'JetBrains Mono', monospace;
+      --ff-body:   'DM Sans', sans-serif;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -43,538 +41,452 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-
-    /* dot-grid atmosphere */
     body::before {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background-image:
         radial-gradient(ellipse 60% 60% at 15% 85%, rgba(0,212,255,.045) 0%, transparent 100%),
-        radial-gradient(ellipse 50% 50% at 85% 15%, rgba(100,80,255,.04) 0%, transparent 100%),
+        radial-gradient(ellipse 50% 50% at 85% 15%, rgba(100,80,255,.04)  0%, transparent 100%),
         radial-gradient(circle, rgba(0,212,255,.055) 1px, transparent 1px);
       background-size: 100% 100%, 100% 100%, 36px 36px;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* ─── Header ───────────────────────────────────────────────────── */
+    /* ─── Header ────────────────────────────────────────────────────── */
     header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: sticky; top: 0; z-index: 100;
       height: 62px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 0 2rem;
-      background: rgba(8,13,26,.88);
+      background: rgba(8,13,26,.9);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border);
     }
     header::after {
       content: '';
-      position: absolute;
-      bottom: -1px; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent 0%, var(--cyan) 40%, var(--cyan) 60%, transparent 100%);
-      opacity: .25;
+      position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan) 40%, var(--cyan) 60%, transparent);
+      opacity: .22;
     }
-
-    .site-brand {
-      display: flex;
-      align-items: center;
-      gap: .8rem;
-      text-decoration: none;
-    }
+    .site-brand { display: flex; align-items: center; gap: .8rem; text-decoration: none; }
     .site-brand h1 {
-      font-family: var(--ff-disp);
-      font-size: .92rem;
-      font-weight: 700;
-      letter-spacing: .12em;
-      color: var(--cyan);
-      line-height: 1;
+      font-family: var(--ff-disp); font-size: .92rem; font-weight: 700;
+      letter-spacing: .12em; color: var(--cyan); line-height: 1;
     }
     .site-badge {
-      font-family: var(--ff-mono);
-      font-size: .6rem;
-      font-weight: 300;
-      color: var(--text-dim);
-      letter-spacing: .06em;
-      background: rgba(0,212,255,.06);
-      border: 1px solid var(--border);
-      padding: .2em .65em;
-      border-radius: 3px;
+      font-family: var(--ff-mono); font-size: .6rem; font-weight: 300;
+      color: var(--text-dim); letter-spacing: .06em;
+      background: rgba(0,212,255,.06); border: 1px solid var(--border);
+      padding: .2em .65em; border-radius: 3px;
     }
-
     .hdr-right { display: flex; align-items: center; gap: 1.25rem; }
-
     .live-dot {
-      display: flex;
-      align-items: center;
-      gap: .45rem;
-      font-family: var(--ff-mono);
-      font-size: .65rem;
-      color: var(--text-dim);
+      display: flex; align-items: center; gap: .45rem;
+      font-family: var(--ff-mono); font-size: .65rem; color: var(--text-dim);
     }
     .live-dot i {
-      display: inline-block;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: 0 0 8px var(--cyan);
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 8px var(--cyan);
       animation: blink 2.4s ease-in-out infinite;
     }
     @keyframes blink {
       0%,100% { opacity: 1; transform: scale(1); }
       50%      { opacity: .35; transform: scale(.65); }
     }
-
     .gh-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: .4em;
-      font-family: var(--ff-mono);
-      font-size: .7rem;
-      color: var(--text-dim);
-      text-decoration: none;
-      border: 1px solid var(--border);
-      padding: .35em 1em;
-      border-radius: 4px;
+      display: inline-flex; align-items: center; gap: .4em;
+      font-family: var(--ff-mono); font-size: .7rem;
+      color: var(--text-dim); text-decoration: none;
+      border: 1px solid var(--border); padding: .35em 1em; border-radius: 4px;
       transition: color .18s, border-color .18s, background .18s;
     }
-    .gh-btn:hover {
-      color: var(--cyan);
-      border-color: var(--cyan-dim);
-      background: var(--cyan-glow);
-    }
+    .gh-btn:hover { color: var(--cyan); border-color: var(--cyan-dim); background: var(--cyan-glow); }
 
-    /* ─── Layout ───────────────────────────────────────────────────── */
+    /* ─── Layout ────────────────────────────────────────────────────── */
     .wrap {
-      position: relative;
-      z-index: 1;
-      max-width: 1160px;
-      margin: 0 auto;
+      position: relative; z-index: 1;
+      max-width: 1160px; margin: 0 auto;
       padding: 2rem 1.5rem;
-      display: grid;
-      grid-template-columns: 270px 1fr;
-      gap: 2rem;
-      align-items: start;
+      display: grid; grid-template-columns: 270px 1fr;
+      gap: 2rem; align-items: start;
     }
 
-    /* ─── Sidebar ──────────────────────────────────────────────────── */
-    .sidebar {
-      position: sticky;
-      top: 80px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .panel {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-    }
+    /* ─── Sidebar ───────────────────────────────────────────────────── */
+    .sidebar { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 1.25rem; }
+    .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
     .panel-hdr {
       padding: .65rem 1rem;
-      background: rgba(0,212,255,.035);
-      border-bottom: 1px solid var(--border);
-      font-family: var(--ff-mono);
-      font-size: .6rem;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--cyan-dim);
-      display: flex;
-      justify-content: space-between;
+      background: rgba(0,212,255,.035); border-bottom: 1px solid var(--border);
+      font-family: var(--ff-mono); font-size: .6rem; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--cyan-dim);
+      display: flex; justify-content: space-between;
     }
 
     /* ── Calendar ── */
     .cal-wrap { padding: .9rem; }
-
-    .cal-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: .85rem;
-    }
-    .cal-month-lbl {
-      font-family: var(--ff-head);
-      font-size: .88rem;
-      font-weight: 700;
-      color: var(--white);
-    }
+    .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: .85rem; }
+    .cal-month-lbl { font-family: var(--ff-head); font-size: .88rem; font-weight: 700; color: var(--white); }
     .cal-btn {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      width: 26px; height: 26px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: .85rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: none; border: 1px solid var(--border); color: var(--text-dim);
+      width: 26px; height: 26px; border-radius: 3px; cursor: pointer; font-size: .85rem;
+      display: flex; align-items: center; justify-content: center;
       transition: color .15s, border-color .15s;
     }
     .cal-btn:hover { color: var(--cyan); border-color: var(--cyan-dim); }
-
-    .cal-grid {
-      display: grid;
-      grid-template-columns: repeat(7,1fr);
-      gap: 2px;
-    }
+    .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
     .cal-dow {
-      font-family: var(--ff-mono);
-      font-size: .55rem;
-      color: var(--text-muted);
-      text-align: center;
-      padding: .3rem 0;
-      letter-spacing: .04em;
+      font-family: var(--ff-mono); font-size: .55rem; color: var(--text-muted);
+      text-align: center; padding: .3rem 0; letter-spacing: .04em;
     }
     .cal-day {
-      aspect-ratio: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--ff-mono);
-      font-size: .68rem;
-      border-radius: 3px;
-      color: var(--text-muted);
-      position: relative;
-      cursor: default;
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      font-family: var(--ff-mono); font-size: .68rem; border-radius: 3px;
+      color: var(--text-muted); position: relative; cursor: default;
     }
-    .cal-day.has-posts {
-      color: var(--text);
-      cursor: pointer;
-      transition: background .15s, color .15s;
-    }
+    .cal-day.has-posts { color: var(--text); cursor: pointer; transition: background .15s, color .15s; }
     .cal-day.has-posts::after {
-      content: '';
-      position: absolute;
-      bottom: 2px; left: 50%;
-      transform: translateX(-50%);
-      width: 3px; height: 3px;
-      border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: 0 0 5px var(--cyan);
+      content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+      width: 3px; height: 3px; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 5px var(--cyan);
     }
     .cal-day.has-posts:hover { background: var(--cyan-glow); color: var(--cyan); }
-    .cal-day.active {
-      background: var(--cyan) !important;
-      color: var(--bg) !important;
-      font-weight: 600;
-    }
+    .cal-day.active { background: var(--cyan) !important; color: var(--bg) !important; font-weight: 600; }
     .cal-day.active::after { display: none; }
     .cal-day.today { color: var(--cyan-dim); }
-
     .cal-clear {
-      display: none;
-      width: 100%;
-      margin-top: .65rem;
-      padding: .38rem;
-      background: none;
-      border: 1px solid rgba(0,212,255,.18);
-      border-radius: 4px;
-      color: var(--text-dim);
-      font-family: var(--ff-mono);
-      font-size: .6rem;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      cursor: pointer;
+      display: block; width: 100%; margin-top: .65rem; padding: .38rem;
+      background: none; border: 1px solid rgba(0,212,255,.18); border-radius: 4px;
+      color: var(--text-dim); font-family: var(--ff-mono); font-size: .6rem;
+      letter-spacing: .06em; text-transform: uppercase; cursor: pointer;
       transition: color .15s, border-color .15s;
     }
-    .cal-clear.on { display: block; }
     .cal-clear:hover { color: var(--cyan); border-color: var(--cyan-dim); }
 
     /* ── Stats ── */
     .stats { padding: .7rem 1rem; }
     .stat { display: flex; justify-content: space-between; padding: .32rem 0; }
     .stat + .stat { border-top: 1px solid rgba(255,255,255,.03); }
-    .stat-k {
-      font-family: var(--ff-mono);
-      font-size: .6rem;
-      text-transform: uppercase;
-      letter-spacing: .09em;
-      color: var(--text-dim);
-    }
-    .stat-v {
-      font-family: var(--ff-mono);
-      font-size: .68rem;
-      color: var(--cyan-dim);
-    }
+    .stat-k { font-family: var(--ff-mono); font-size: .6rem; text-transform: uppercase; letter-spacing: .09em; color: var(--text-dim); }
+    .stat-v { font-family: var(--ff-mono); font-size: .68rem; color: var(--cyan-dim); }
 
-    /* ─── Main ─────────────────────────────────────────────────────── */
+    /* ─── Main ──────────────────────────────────────────────────────── */
     .main { min-width: 0; }
-
-    /* ── Filter pills ── */
-    .filter-bar {
-      display: flex;
-      align-items: center;
-      gap: .45rem;
-      margin-bottom: 1.35rem;
-      flex-wrap: wrap;
-    }
+    .filter-bar { display: flex; align-items: center; gap: .45rem; margin-bottom: 1.35rem; flex-wrap: wrap; }
     .filter-lbl {
-      font-family: var(--ff-mono);
-      font-size: .6rem;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--text-muted);
-      margin-right: .2rem;
+      font-family: var(--ff-mono); font-size: .6rem; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--text-muted); margin-right: .2rem;
     }
     .pill {
-      font-family: var(--ff-mono);
-      font-size: .68rem;
-      padding: .32em 1.05em;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: none;
-      color: var(--text-dim);
-      cursor: pointer;
-      letter-spacing: .03em;
+      font-family: var(--ff-mono); font-size: .68rem; padding: .32em 1.05em;
+      border-radius: 20px; border: 1px solid var(--border); background: none;
+      color: var(--text-dim); cursor: pointer; letter-spacing: .03em;
       transition: color .18s, border-color .18s, background .18s, box-shadow .18s;
     }
     .pill:hover { border-color: var(--cyan-dim); color: var(--text); }
-    .pill.on                { background: var(--cyan);    border-color: var(--cyan);    color: var(--bg); font-weight: 600; box-shadow: 0 0 14px rgba(0,212,255,.28); }
-    .pill[data-c="slides"].on { background: var(--amber);   border-color: var(--amber);   color: #1a0a00; box-shadow: 0 0 14px rgba(245,158,11,.28); }
-    .pill[data-c="code"].on   { background: var(--violet);  border-color: var(--violet);  color: #0d0a1a; box-shadow: 0 0 14px rgba(167,139,250,.28); }
-    .pill[data-c="vids"].on   { background: var(--emerald); border-color: var(--emerald); color: #011a0e; box-shadow: 0 0 14px rgba(52,211,153,.28); }
+    .pill.on               { background: var(--cyan);    border-color: var(--cyan);    color: var(--bg);   font-weight: 600; box-shadow: 0 0 14px rgba(0,212,255,.28); }
+    .pill.on[data-c=slides]{ background: var(--amber);   border-color: var(--amber);   color: #1a0a00; box-shadow: 0 0 14px rgba(245,158,11,.28); }
+    .pill.on[data-c=code]  { background: var(--violet);  border-color: var(--violet);  color: #0d0a1a; box-shadow: 0 0 14px rgba(167,139,250,.28); }
+    .pill.on[data-c=vids]  { background: var(--emerald); border-color: var(--emerald); color: #011a0e; box-shadow: 0 0 14px rgba(52,211,153,.28); }
 
-    .results-meta {
-      font-family: var(--ff-mono);
-      font-size: .62rem;
-      color: var(--text-muted);
-      margin-bottom: 1.25rem;
-      min-height: 1em;
-    }
+    .results-meta { font-family: var(--ff-mono); font-size: .62rem; color: var(--text-muted); margin-bottom: 1.25rem; min-height: 1em; }
 
-    /* ── Post cards ── */
+    /* ── Cards ── */
     .posts { display: flex; flex-direction: column; gap: 1.25rem; }
-
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
       transition: border-color .22s, box-shadow .22s;
       animation: rise .38s ease both;
     }
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0);     }
-    }
-    .card:hover {
-      border-color: var(--border-h);
-      box-shadow: 0 0 32px rgba(0,212,255,.07), 0 2px 12px rgba(0,0,0,.4);
-    }
-    /* top accent stripe */
-    .card::before {
-      content: '';
-      display: block;
-      height: 2px;
-    }
-    .card.c-vids.c-slides::before { background: linear-gradient(90deg, var(--emerald) 0%, var(--amber) 60%, transparent 100%); }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .card:hover { border-color: var(--border-h); box-shadow: 0 0 32px rgba(0,212,255,.07), 0 2px 12px rgba(0,0,0,.4); }
+    .card::before { content: ''; display: block; height: 2px; }
+    .card.c-vids.c-slides::before { background: linear-gradient(90deg, var(--emerald), var(--amber) 60%, transparent); }
     .card.c-vids::before           { background: linear-gradient(90deg, var(--emerald), transparent 70%); }
     .card.c-slides::before         { background: linear-gradient(90deg, var(--amber),   transparent 70%); }
     .card.c-code::before           { background: linear-gradient(90deg, var(--violet),  transparent 70%); }
 
-    /* video block */
-    .vid-block {
-      background: #000;
-      border-bottom: 1px solid var(--border);
-    }
-    .vid-block video {
-      width: 100%;
-      display: block;
-      max-height: 360px;
-      object-fit: contain;
-    }
+    .vid-block { background: #000; border-bottom: 1px solid var(--border); }
+    .vid-block video { width: 100%; display: block; max-height: 360px; object-fit: contain; }
 
-    /* card body */
     .card-body { padding: 1.2rem 1.4rem; }
-
-    .card-meta {
-      display: flex;
-      align-items: center;
-      gap: .65rem;
-      margin-bottom: .7rem;
-      flex-wrap: wrap;
-    }
+    .card-meta { display: flex; align-items: center; gap: .65rem; margin-bottom: .7rem; flex-wrap: wrap; }
     .phase-badge {
-      font-family: var(--ff-mono);
-      font-size: .58rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: .09em;
-      background: var(--cyan-glow);
-      border: 1px solid rgba(0,212,255,.22);
-      color: var(--cyan-dim);
-      padding: .15em .6em;
-      border-radius: 3px;
+      font-family: var(--ff-mono); font-size: .58rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: .09em;
+      background: var(--cyan-glow); border: 1px solid rgba(0,212,255,.22);
+      color: var(--cyan-dim); padding: .15em .6em; border-radius: 3px;
     }
-    .post-date {
-      font-family: var(--ff-mono);
-      font-size: .62rem;
-      color: var(--text-dim);
-    }
+    .post-date { font-family: var(--ff-mono); font-size: .62rem; color: var(--text-dim); }
     .tags { display: flex; gap: .35rem; margin-left: auto; flex-wrap: wrap; }
     .tag {
-      font-family: var(--ff-mono);
-      font-size: .56rem;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      padding: .13em .5em;
-      border-radius: 3px;
-      border: 1px solid;
-      display: inline-flex;
-      align-items: center;
-      gap: .3em;
+      font-family: var(--ff-mono); font-size: .56rem; text-transform: uppercase;
+      letter-spacing: .05em; padding: .13em .5em; border-radius: 3px; border: 1px solid;
+      display: inline-flex; align-items: center; gap: .3em;
     }
     .tag.slides { color: var(--amber);   border-color: rgba(245,158,11,.25);  background: rgba(245,158,11,.06); }
     .tag.code   { color: var(--violet);  border-color: rgba(167,139,250,.25); background: rgba(167,139,250,.06); }
     .tag.vids   { color: var(--emerald); border-color: rgba(52,211,153,.25);  background: rgba(52,211,153,.06); }
 
-    .card-title {
-      font-family: var(--ff-head);
-      font-size: 1.12rem;
-      font-weight: 800;
-      color: var(--white);
-      line-height: 1.28;
-      margin-bottom: .2rem;
-    }
-    .card-sub {
-      font-family: var(--ff-mono);
-      font-size: .68rem;
-      font-style: italic;
-      color: var(--text-dim);
-      margin-bottom: .75rem;
-    }
-    .card-desc {
-      font-size: .875rem;
-      color: var(--text);
-      line-height: 1.7;
-      margin-bottom: 1rem;
-    }
+    .card-title { font-family: var(--ff-head); font-size: 1.12rem; font-weight: 800; color: var(--white); line-height: 1.28; margin-bottom: .2rem; }
+    .card-sub   { font-family: var(--ff-mono); font-size: .68rem; font-style: italic; color: var(--text-dim); margin-bottom: .75rem; }
+    .card-desc  { font-size: .875rem; color: var(--text); line-height: 1.7; margin-bottom: 1rem; }
 
     .card-links { display: flex; gap: .65rem; flex-wrap: wrap; }
     .lnk {
-      display: inline-flex;
-      align-items: center;
-      gap: .38em;
-      font-family: var(--ff-mono);
-      font-size: .65rem;
-      text-decoration: none;
-      padding: .38em .95em;
-      border-radius: 4px;
-      border: 1px solid;
-      transition: background .18s, border-color .18s;
+      display: inline-flex; align-items: center; gap: .38em;
+      font-family: var(--ff-mono); font-size: .65rem; text-decoration: none;
+      padding: .38em .95em; border-radius: 4px; border: 1px solid;
+      transition: background .18s, border-color .18s; cursor: pointer; background: none;
     }
-    .lnk-slides { color: var(--amber);   border-color: rgba(245,158,11,.22);  background: rgba(245,158,11,.04); }
-    .lnk-slides:hover { background: rgba(245,158,11,.1); border-color: var(--amber); }
-    .lnk-code   { color: var(--violet);  border-color: rgba(167,139,250,.22); background: rgba(167,139,250,.04); }
+    .lnk-slides { color: var(--amber);  border-color: rgba(245,158,11,.22);  background: rgba(245,158,11,.04); }
+    .lnk-slides:hover { background: rgba(245,158,11,.1);  border-color: var(--amber); }
+    .lnk-code   { color: var(--violet); border-color: rgba(167,139,250,.22); background: rgba(167,139,250,.04); }
     .lnk-code:hover   { background: rgba(167,139,250,.1); border-color: var(--violet); }
 
-    /* empty state */
-    .empty {
-      display: none;
-      text-align: center;
-      padding: 4rem 2rem;
-      font-family: var(--ff-mono);
-      font-size: .72rem;
-      color: var(--text-muted);
-    }
-    .empty.on { display: block; }
+    /* ── Empty state ── */
+    .empty { text-align: center; padding: 4rem 2rem; font-family: var(--ff-mono); font-size: .72rem; color: var(--text-muted); }
     .empty-icon { font-size: 1.8rem; margin-bottom: .6rem; opacity: .25; }
 
-    /* ─── Responsive ───────────────────────────────────────────────── */
+    /* ─── Slides Modal ──────────────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(4,8,18,.82); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal {
+      position: relative;
+      width: min(92vw, 1100px); height: min(88vh, 720px);
+      background: var(--bg-card);
+      border: 1px solid var(--border-h); border-radius: 10px;
+      box-shadow: 0 0 80px rgba(0,212,255,.12), 0 24px 64px rgba(0,0,0,.7);
+      display: flex; flex-direction: column; overflow: hidden;
+      animation: modalIn .22s ease both;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(.96) translateY(10px); }
+      to   { opacity: 1; transform: scale(1)   translateY(0);    }
+    }
+    .modal-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .6rem 1rem;
+      background: rgba(0,212,255,.04); border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .modal-title {
+      font-family: var(--ff-mono); font-size: .65rem;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--cyan-dim);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .modal-title::before {
+      content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--amber); box-shadow: 0 0 6px var(--amber);
+    }
+    .modal-close {
+      background: none; border: 1px solid var(--border); color: var(--text-dim);
+      width: 28px; height: 28px; border-radius: 4px; cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .modal-close:hover { color: var(--white); border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.06); }
+    .modal-body { flex: 1; position: relative; background: #000; }
+    .modal-body iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .modal-loading {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: .75rem; font-family: var(--ff-mono); font-size: .68rem; color: var(--text-dim);
+      pointer-events: none;
+    }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2px solid var(--border); border-top-color: var(--amber);
+      border-radius: 50%; animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Responsive ────────────────────────────────────────────────── */
     @media (max-width: 780px) {
       .wrap { grid-template-columns: 1fr; padding: 1rem; }
       .sidebar { position: static; }
       header { padding: 0 1rem; }
       .site-badge, .live-dot { display: none; }
+      .modal { width: 98vw; height: 92vh; }
     }
+
+    /* Vue transition */
+    .fade-enter-active, .fade-leave-active { transition: opacity .18s ease; }
+    .fade-enter-from, .fade-leave-to { opacity: 0; }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════ HEADER -->
-<header>
-  <a href="#" class="site-brand">
-    <h1>TAICHI&nbsp;POSTS</h1>
-    <span class="site-badge">MLS-MPM · SIGGRAPH 2018</span>
-  </a>
-  <div class="hdr-right">
-    <div class="live-dot"><i></i> 270K particles</div>
-    <a href="https://github.com/Qervas/taichi" class="gh-btn" target="_blank" rel="noopener">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
-      GitHub
+<div id="app">
+
+  <!-- ══════════════════════════════════════════ HEADER -->
+  <header>
+    <a href="#" class="site-brand">
+      <h1>TAICHI&nbsp;POSTS</h1>
+      <span class="site-badge">MLS-MPM · SIGGRAPH 2018</span>
     </a>
-  </div>
-</header>
+    <div class="hdr-right">
+      <div class="live-dot"><i></i> 270K particles</div>
+      <a href="https://github.com/Qervas/taichi" class="gh-btn" target="_blank" rel="noopener">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
 
-<!-- ══════════════════════════════════════════════════════ LAYOUT -->
-<div class="wrap">
+  <!-- ══════════════════════════════════════════ LAYOUT -->
+  <div class="wrap">
 
-  <!-- ───────────────── SIDEBAR -->
-  <aside class="sidebar">
+    <!-- ─── Sidebar ──────────────────────────────────── -->
+    <aside class="sidebar">
 
-    <!-- Calendar -->
-    <div class="panel">
-      <div class="panel-hdr">
-        <span>// Date Filter</span>
-        <span id="calInfo"></span>
-      </div>
-      <div class="cal-wrap">
-        <div class="cal-nav">
-          <button class="cal-btn" id="calPrev">&#8249;</button>
-          <span class="cal-month-lbl" id="calLbl"></span>
-          <button class="cal-btn" id="calNext">&#8250;</button>
+      <!-- Calendar -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>// Date Filter</span>
         </div>
-        <div class="cal-grid" id="calGrid"></div>
-        <button class="cal-clear" id="calClear">✕ &nbsp;Clear date filter</button>
+        <div class="cal-wrap">
+          <div class="cal-nav">
+            <button class="cal-btn" @click="prevMonth">&#8249;</button>
+            <span class="cal-month-lbl">{{ calMonthLabel }}</span>
+            <button class="cal-btn" @click="nextMonth">&#8250;</button>
+          </div>
+          <div class="cal-grid">
+            <div v-for="d in DOW" :key="d" class="cal-dow">{{ d }}</div>
+            <template v-for="(slot, i) in calDays" :key="i">
+              <div v-if="slot === null" class="cal-day"></div>
+              <div v-else
+                class="cal-day"
+                :class="{
+                  'has-posts': slot.hasPosts,
+                  'today':     slot.isToday,
+                  'active':    slot.dateStr === activeDate
+                }"
+                @click="slot.hasPosts && toggleDate(slot.dateStr)"
+              >{{ slot.day }}</div>
+            </template>
+          </div>
+          <button v-if="activeDate" class="cal-clear" @click="activeDate = null">✕ &nbsp;Clear date filter</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="panel">
+        <div class="panel-hdr"><span>// Simulation Scale</span></div>
+        <div class="stats">
+          <div class="stat" v-for="s in STATS" :key="s.k">
+            <span class="stat-k">{{ s.k }}</span>
+            <span class="stat-v">{{ s.v }}</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ─── Main ─────────────────────────────────────── -->
+    <main class="main">
+
+      <!-- Filter pills -->
+      <div class="filter-bar">
+        <span class="filter-lbl">Filter:</span>
+        <button
+          v-for="cat in CATS" :key="cat.id"
+          class="pill"
+          :class="{ on: activeCat === cat.id }"
+          :data-c="cat.id"
+          @click="activeCat = cat.id"
+        >{{ cat.label }}</button>
+      </div>
+
+      <!-- Results info -->
+      <div class="results-meta">{{ resultsMeta }}</div>
+
+      <!-- Post cards -->
+      <div class="posts">
+        <transition-group name="fade">
+          <div
+            v-for="(post, idx) in filteredPosts" :key="post.id"
+            class="card"
+            :class="post.categories.map(c => 'c-' + c)"
+            :style="{ animationDelay: idx * 0.07 + 's' }"
+          >
+            <!-- Video -->
+            <div v-if="post.video" class="vid-block">
+              <video controls preload="metadata" playsinline>
+                <source :src="post.video" type="video/mp4">
+              </video>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="phase-badge">{{ post.phase }}</span>
+                <span class="post-date">{{ fmtDate(post.date) }}</span>
+                <div class="tags">
+                  <span v-for="c in post.categories" :key="c" class="tag" :class="c">
+                    <span v-html="ICONS[c]"></span>{{ c }}
+                  </span>
+                </div>
+              </div>
+              <h2 class="card-title">{{ post.title }}</h2>
+              <p  class="card-sub">{{ post.subtitle }}</p>
+              <p  class="card-desc">{{ post.description }}</p>
+              <div v-if="post.slides || post.code" class="card-links">
+                <button v-if="post.slides" class="lnk lnk-slides" @click="openSlides(post)">
+                  <span v-html="ICONS.slides"></span> View Slides
+                </button>
+                <a v-if="post.code" :href="post.code" class="lnk lnk-code" target="_blank" rel="noopener">
+                  <span v-html="ICONS.ext"></span> View Code
+                </a>
+              </div>
+            </div>
+          </div>
+        </transition-group>
+      </div>
+
+      <!-- Empty state -->
+      <div v-if="filteredPosts.length === 0" class="empty">
+        <div class="empty-icon">◈</div>
+        No posts match the current filter.
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ══════════════════════════════════════════ SLIDES MODAL -->
+  <transition name="fade">
+    <div v-if="modal.open" class="modal-backdrop" @click.self="closeModal">
+      <div class="modal">
+        <div class="modal-bar">
+          <span class="modal-title">{{ modal.title }}</span>
+          <button class="modal-close" @click="closeModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div v-if="!modal.loaded" class="modal-loading">
+            <div class="spinner"></div>
+            Loading slides…
+          </div>
+          <iframe
+            :src="modal.url"
+            title="Slide viewer"
+            allowfullscreen
+            @load="modal.loaded = true"
+          ></iframe>
+        </div>
       </div>
     </div>
+  </transition>
 
-    <!-- Stats -->
-    <div class="panel">
-      <div class="panel-hdr"><span>// Simulation Scale</span></div>
-      <div class="stats">
-        <div class="stat"><span class="stat-k">Algorithm</span>  <span class="stat-v">MLS-MPM</span></div>
-        <div class="stat"><span class="stat-k">Max Particles</span><span class="stat-v">270 K</span></div>
-        <div class="stat"><span class="stat-k">Framework</span>   <span class="stat-v">Taichi Lang</span></div>
-        <div class="stat"><span class="stat-k">Phases</span>      <span class="stat-v">4</span></div>
-        <div class="stat"><span class="stat-k">Transfer</span>    <span class="stat-v">APIC</span></div>
-        <div class="stat"><span class="stat-k">Reference</span>   <span class="stat-v">SIGGRAPH 2018</span></div>
-      </div>
-    </div>
-
-  </aside>
-
-  <!-- ───────────────── MAIN -->
-  <main class="main">
-
-    <div class="filter-bar">
-      <span class="filter-lbl">Filter:</span>
-      <button class="pill on" data-c="all">All</button>
-      <button class="pill" data-c="slides">Slides</button>
-      <button class="pill" data-c="code">Code</button>
-      <button class="pill" data-c="vids">Vids</button>
-    </div>
-
-    <div class="results-meta" id="meta"></div>
-    <div class="posts" id="posts"></div>
-    <div class="empty" id="empty">
-      <div class="empty-icon">◈</div>
-      No posts match the current filter.
-    </div>
-
-  </main>
-</div><!-- .wrap -->
+</div><!-- #app -->
 
 <script>
-/* ━━━━━━━━━━━━━━━━━━━━ DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const { createApp, ref, computed, reactive, onMounted, onUnmounted } = Vue;
+
+/* ━━━━━━━━━━━━━━━━━━━━ STATIC DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const POSTS = [
   {
     id: 1,
@@ -621,178 +533,145 @@ const POSTS = [
     date: "2026-02-26",
     categories: ["code", "slides"],
     description:
-      "Extends Phase 3 to a full river-flood scenario. The domain is doubled in the flow direction (128×64×64, dx = 1/64) to accommodate a bridge spanning the width of the channel. Water uses weakly compressible EOS; the concrete structure uses Drucker-Prager with elevated yield stress (E = 10 000). CFL-safe timestep dt = 8×10⁻⁵ s, 80 substeps per frame.",
+      "Extends Phase 3 to a full river-flood scenario. The domain is doubled in the flow direction (128×64×64, dx = 1/64). Water uses weakly compressible EOS; the concrete structure uses Drucker-Prager with elevated yield stress (E = 10 000). CFL-safe timestep dt = 8×10⁻⁵ s, 80 substeps per frame.",
     slides: "slides/phase2-4-mls-mpm.pptx",
     code: "https://github.com/Qervas/taichi/blob/main/src/phase4_flood.py",
   },
 ];
 
-/* ━━━━━━━━━━━━━━━━━━━━ STATE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-let activeCat  = "all";
-let activeDate = null;
-let calY = 2026, calM = 1;   // 0-indexed month; 1 = February
+const STATS = [
+  { k: "Algorithm",     v: "MLS-MPM"     },
+  { k: "Max Particles", v: "270 K"        },
+  { k: "Framework",     v: "Taichi Lang"  },
+  { k: "Phases",        v: "4"            },
+  { k: "Transfer",      v: "APIC"         },
+  { k: "Reference",     v: "SIGGRAPH 2018"},
+];
 
-const POST_DATES = new Set(POSTS.map(p => p.date));
-const MONTHS = ["January","February","March","April","May","June",
-                "July","August","September","October","November","December"];
-const DOW    = ["Su","Mo","Tu","We","Th","Fr","Sa"];
-const today  = new Date();
+const CATS = [
+  { id: "all",    label: "All"    },
+  { id: "slides", label: "Slides" },
+  { id: "code",   label: "Code"   },
+  { id: "vids",   label: "Vids"   },
+];
 
-/* ━━━━━━━━━━━━━━━━━━━━ CALENDAR ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function renderCal() {
-  const grid = document.getElementById("calGrid");
-  document.getElementById("calLbl").textContent = `${MONTHS[calM]} ${calY}`;
-  grid.innerHTML = "";
-
-  DOW.forEach(d => {
-    const el = document.createElement("div");
-    el.className = "cal-dow";
-    el.textContent = d;
-    grid.appendChild(el);
-  });
-
-  const firstDow   = new Date(calY, calM, 1).getDay();
-  const daysInMo   = new Date(calY, calM + 1, 0).getDate();
-
-  for (let i = 0; i < firstDow; i++)
-    grid.appendChild(document.createElement("div"));
-
-  for (let d = 1; d <= daysInMo; d++) {
-    const ds = `${calY}-${String(calM+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    const el = document.createElement("div");
-    el.className = "cal-day";
-    el.textContent = d;
-
-    const todayDs = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
-    if (ds === todayDs)    el.classList.add("today");
-    if (POST_DATES.has(ds)) el.classList.add("has-posts");
-    if (ds === activeDate)  el.classList.add("active");
-
-    if (POST_DATES.has(ds)) {
-      el.addEventListener("click", () => {
-        activeDate = activeDate === ds ? null : ds;
-        renderCal();
-        renderPosts();
-        toggleClear();
-      });
-    }
-    grid.appendChild(el);
-  }
-}
-
-function toggleClear() {
-  document.getElementById("calClear").classList.toggle("on", !!activeDate);
-}
-
-document.getElementById("calClear").addEventListener("click", () => {
-  activeDate = null; renderCal(); renderPosts(); toggleClear();
-});
-document.getElementById("calPrev").addEventListener("click", () => {
-  calM--; if (calM < 0)  { calM = 11; calY--; } renderCal();
-});
-document.getElementById("calNext").addEventListener("click", () => {
-  calM++; if (calM > 11) { calM = 0;  calY++; } renderCal();
-});
-
-/* ━━━━━━━━━━━━━━━━━━━━ CATEGORY FILTER ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-document.querySelectorAll(".pill").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".pill").forEach(b => b.classList.remove("on"));
-    btn.classList.add("on");
-    activeCat = btn.dataset.c;
-    renderPosts();
-  });
-});
-
-/* ━━━━━━━━━━━━━━━━━━━━ RENDER POSTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-const IC = {
-  slides:   `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
-  code:     `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
-  vids:     `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`,
-  ext:      `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
+const ICONS = {
+  slides: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
+  code:   `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+  vids:   `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`,
+  ext:    `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
 };
 
+const DOW       = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+const MONTHS    = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const POST_DATES = new Set(POSTS.map(p => p.date));
+const todayStr  = (() => {
+  const t = new Date();
+  return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`;
+})();
+
 function fmtDate(ds) {
-  const [y,m,d] = ds.split("-").map(Number);
+  const [y, m, d] = ds.split("-").map(Number);
   return `${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]} ${d}, ${y}`;
 }
 
-function getFiltered() {
-  return POSTS.filter(p =>
-    (activeCat === "all" || p.categories.includes(activeCat)) &&
-    (!activeDate || p.date === activeDate)
-  );
+function slideEmbedUrl(path) {
+  const raw = `https://raw.githubusercontent.com/Qervas/taichi/main/${path}`;
+  return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(raw)}`;
 }
 
-function buildCard(post, idx) {
-  const card = document.createElement("div");
-  card.className = "card";
-  post.categories.forEach(c => card.classList.add("c-" + c));
-  card.style.animationDelay = `${idx * 0.07}s`;
+/* ━━━━━━━━━━━━━━━━━━━━ VUE APP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+createApp({
+  setup() {
+    /* ── Reactive state ── */
+    const activeCat  = ref("all");
+    const activeDate = ref(null);
+    const calYear    = ref(2026);
+    const calMonth   = ref(1);    // 0-indexed; 1 = February
 
-  const vidHtml = post.video
-    ? `<div class="vid-block">
-         <video controls preload="metadata" playsinline>
-           <source src="${post.video}" type="video/mp4">
-         </video>
-       </div>`
-    : "";
+    const modal = reactive({
+      open:   false,
+      title:  "",
+      url:    "",
+      loaded: false,
+    });
 
-  const tagHtml = post.categories.map(c =>
-    `<span class="tag ${c}">${IC[c]} ${c}</span>`
-  ).join("");
+    /* ── Calendar computed ── */
+    const calMonthLabel = computed(() => `${MONTHS[calMonth.value]} ${calYear.value}`);
 
-  let links = "";
-  if (post.slides) {
-    const raw = `https://raw.githubusercontent.com/Qervas/taichi/main/${post.slides}`;
-    const viewer = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(raw)}`;
-    links += `<a href="${viewer}" class="lnk lnk-slides" target="_blank" rel="noopener">${IC.slides} View Slides</a>`;
+    const calDays = computed(() => {
+      const days = [];
+      const firstDow  = new Date(calYear.value, calMonth.value, 1).getDay();
+      const daysInMo  = new Date(calYear.value, calMonth.value + 1, 0).getDate();
+
+      for (let i = 0; i < firstDow; i++) days.push(null);
+
+      for (let d = 1; d <= daysInMo; d++) {
+        const ds = `${calYear.value}-${String(calMonth.value + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+        days.push({ day: d, dateStr: ds, hasPosts: POST_DATES.has(ds), isToday: ds === todayStr });
+      }
+      return days;
+    });
+
+    /* ── Filtered posts ── */
+    const filteredPosts = computed(() =>
+      POSTS.filter(p =>
+        (activeCat.value === "all" || p.categories.includes(activeCat.value)) &&
+        (!activeDate.value || p.date === activeDate.value)
+      )
+    );
+
+    const resultsMeta = computed(() => {
+      const n = filteredPosts.value.length;
+      if (!n) return "";
+      let m = `${n} post${n !== 1 ? "s" : ""}`;
+      if (activeDate.value) m += ` · ${fmtDate(activeDate.value)}`;
+      if (activeCat.value !== "all") m += ` · #${activeCat.value}`;
+      return m;
+    });
+
+    /* ── Calendar methods ── */
+    function prevMonth() {
+      calMonth.value--;
+      if (calMonth.value < 0) { calMonth.value = 11; calYear.value--; }
+    }
+    function nextMonth() {
+      calMonth.value++;
+      if (calMonth.value > 11) { calMonth.value = 0; calYear.value++; }
+    }
+    function toggleDate(ds) {
+      activeDate.value = activeDate.value === ds ? null : ds;
+    }
+
+    /* ── Modal methods ── */
+    function openSlides(post) {
+      modal.title  = `${post.phase} — ${post.title}`;
+      modal.url    = slideEmbedUrl(post.slides);
+      modal.loaded = false;
+      modal.open   = true;
+    }
+    function closeModal() {
+      modal.open  = false;
+      modal.url   = "";       // unload iframe
+    }
+
+    /* ── ESC to close modal ── */
+    function onKey(e) { if (e.key === "Escape") closeModal(); }
+    onMounted(()   => window.addEventListener("keydown", onKey));
+    onUnmounted(() => window.removeEventListener("keydown", onKey));
+
+    return {
+      /* data */
+      STATS, CATS, ICONS, DOW, POSTS,
+      /* state */
+      activeCat, activeDate, calYear, calMonth, modal,
+      /* computed */
+      calMonthLabel, calDays, filteredPosts, resultsMeta,
+      /* methods */
+      prevMonth, nextMonth, toggleDate, openSlides, closeModal, fmtDate,
+    };
   }
-  if (post.code)   links += `<a href="${post.code}"   class="lnk lnk-code"   target="_blank" rel="noopener">${IC.ext} View Code</a>`;
-
-  card.innerHTML = `
-    ${vidHtml}
-    <div class="card-body">
-      <div class="card-meta">
-        <span class="phase-badge">${post.phase}</span>
-        <span class="post-date">${fmtDate(post.date)}</span>
-        <div class="tags">${tagHtml}</div>
-      </div>
-      <h2 class="card-title">${post.title}</h2>
-      <p  class="card-sub">${post.subtitle}</p>
-      <p  class="card-desc">${post.description}</p>
-      ${links ? `<div class="card-links">${links}</div>` : ""}
-    </div>`;
-
-  return card;
-}
-
-function renderPosts() {
-  const list  = document.getElementById("posts");
-  const empty = document.getElementById("empty");
-  const meta  = document.getElementById("meta");
-  const items = getFiltered();
-
-  list.innerHTML = "";
-
-  if (!items.length) {
-    empty.classList.add("on");
-    meta.textContent = "";
-    return;
-  }
-  empty.classList.remove("on");
-
-  let m = `${items.length} post${items.length !== 1 ? "s" : ""}`;
-  if (activeDate) m += ` · ${fmtDate(activeDate)}`;
-  if (activeCat !== "all") m += ` · #${activeCat}`;
-  meta.textContent = m;
-
-  items.forEach((p, i) => list.appendChild(buildCard(p, i)));
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━ INIT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-renderCal();
-renderPosts();
+}).mount("#app");
 </script>
 </body>
 </html>
