@@ -4,10 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Taichi Posts</title>
+  <!-- Preconnect to CDN origins so TCP/TLS handshakes happen early -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Syne:wght@500;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="dns-prefetch" href="//unpkg.com">
+
+  <!-- Non-blocking font load: display=swap renders text immediately with fallback font -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Syne:wght@500;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Syne:wght@500;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"></noscript>
+
+  <!-- Vue loads in parallel with HTML parsing; mount() runs after DOMContentLoaded -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" defer></script>
   <style>
     /* ─── Tokens ────────────────────────────────────────────────────── */
     :root {
@@ -416,7 +423,7 @@
           >
             <!-- Video -->
             <div v-if="post.video" class="vid-block">
-              <video controls preload="metadata" playsinline>
+              <video controls preload="none" playsinline>
                 <source :src="post.video" type="video/mp4">
               </video>
             </div>
@@ -484,6 +491,9 @@
 </div><!-- #app -->
 
 <script>
+// Vue is loaded with defer; this inline script runs after it because it's
+// at the bottom of <body> — but guard anyway for robustness.
+document.addEventListener("DOMContentLoaded", function () {
 const { createApp, ref, computed, reactive, onMounted, onUnmounted } = Vue;
 
 /* ━━━━━━━━━━━━━━━━━━━━ STATIC DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -672,6 +682,7 @@ createApp({
     };
   }
 }).mount("#app");
+}); // DOMContentLoaded
 </script>
 </body>
 </html>
