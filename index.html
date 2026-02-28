@@ -299,6 +299,8 @@
     .lnk-slides:hover { background: rgba(245,158,11,.1);  border-color: var(--amber); }
     .lnk-code   { color: var(--violet); border-color: rgba(167,139,250,.22); background: rgba(167,139,250,.04); }
     .lnk-code:hover   { background: rgba(167,139,250,.1); border-color: var(--violet); }
+    .lnk-ref    { color: var(--cyan-dim); border-color: rgba(0,212,255,.18); background: rgba(0,212,255,.04); }
+    .lnk-ref:hover    { background: rgba(0,212,255,.1);  border-color: var(--cyan); color: var(--cyan); }
 
     /* ── Empty state ── */
     .empty { text-align: center; padding: 4rem 2rem; font-family: var(--ff-mono); font-size: .72rem; color: var(--text-muted); }
@@ -514,12 +516,15 @@
               <h2 class="card-title">{{ post.title }}</h2>
               <p  class="card-sub">{{ post.subtitle }}</p>
               <p  class="card-desc">{{ post.description }}</p>
-              <div v-if="post.slides || post.code" class="card-links">
+              <div v-if="post.slides || post.code || post.refs" class="card-links">
                 <button v-if="post.slides" class="lnk lnk-slides" @click="openSlides(post)">
                   <span v-html="ICONS.slides"></span> View Slides
                 </button>
                 <a v-if="post.code" :href="post.code" class="lnk lnk-code" target="_blank" rel="noopener">
                   <span v-html="ICONS.ext"></span> View Code
+                </a>
+                <a v-for="r in post.refs" :key="r.url" :href="r.url" class="lnk lnk-ref" target="_blank" rel="noopener">
+                  <span v-html="ICONS.ref"></span> {{ r.label }}
                 </a>
               </div>
             </div>
@@ -613,6 +618,10 @@ const POSTS = [
     description:
       "Deep reading of the original MLS-MPM paper (Hu et al., SIGGRAPH 2018). Covers the mathematical derivation of the MLS weight functions, the unified MPM formulation, the P2G/G2P transfer schemes, and why replacing APIC's B matrix with MLS gradients gives both accuracy and efficiency gains.",
     slides: "slides-dist/paper/index.html",
+    refs: [
+      { label: "GAMES201 Lecture — MLS-MPM", url: "https://yuanming.taichi.graphics/teaching/2020-games201/#:~:text=Least%20Squares%20MPM%2C-,MLS%2DMPM,-%EF%BC%89" },
+      { label: "Paper — Hu et al. SIGGRAPH 2018", url: "https://yuanming.taichi.graphics/publication/2018-mlsmpm/" },
+    ],
   },
   {
     id: 2,
@@ -692,6 +701,7 @@ const ICONS = {
   code:   `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
   vids:   `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`,
   ext:    `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
+  ref:    `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>`,
 };
 
 const DOW       = ["Su","Mo","Tu","We","Th","Fr","Sa"];
