@@ -248,6 +248,11 @@
       text-transform: uppercase; color: rgba(255,255,255,.7);
     }
 
+    /* ── Multiple video row ── */
+    .vid-row { display: flex; gap: 2px; background: #000; border-bottom: 1px solid var(--border); }
+    .vid-thumb--half { border-bottom: none; flex: 1; min-width: 0; }
+    .vid-thumb--half img { max-height: 200px; }
+
     /* ── Video modal ── */
     .vid-overlay { z-index: 300; }
     .vid-modal {
@@ -467,14 +472,31 @@
             :class="post.categories.map(c => 'c-' + c)"
             :style="{ animationDelay: idx * 0.07 + 's' }"
           >
-            <!-- Video thumbnail -->
-            <div v-if="post.video" class="vid-thumb" @click="openVideo(post)" role="button" tabindex="0" :aria-label="'Play ' + post.title">
+            <!-- Single video thumbnail -->
+            <div v-if="post.video" class="vid-thumb" @click="openVideo(post.title, post.video)" role="button" tabindex="0" :aria-label="'Play ' + post.title">
               <img :src="post.thumb" alt="" loading="lazy">
               <div class="vid-play-wrap">
                 <div class="vid-play-btn">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>
                 </div>
                 <span class="vid-play-label">Play video</span>
+              </div>
+            </div>
+            <!-- Multiple video thumbnails -->
+            <div v-if="post.videos" class="vid-row">
+              <div
+                v-for="v in post.videos" :key="v.src"
+                class="vid-thumb vid-thumb--half"
+                @click="openVideo(v.label, v.src)"
+                role="button" tabindex="0" :aria-label="'Play ' + v.label"
+              >
+                <img :src="v.thumb" alt="" loading="lazy">
+                <div class="vid-play-wrap">
+                  <div class="vid-play-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>
+                  </div>
+                  <span class="vid-play-label">{{ v.label }}</span>
+                </div>
               </div>
             </div>
 
@@ -587,9 +609,13 @@ const POSTS = [
     title: "MLS-MPM Code Walkthrough",
     subtitle: "Official Taichi mpm3d.py line-by-line + screen-space water rendering",
     date: "2026-02-27",
-    categories: ["slides"],
+    categories: ["slides", "vids"],
     description:
       "Deep-dive into the official Taichi mpm3d.py. Covers the 3-step P2G→Grid→G2P loop, the EOS stress formula, the C matrix as velocity gradient, B-spline weights, and the screen-space fluid rendering pipeline (depth splat → bilateral blur → normal reconstruction → Fresnel + Beer's law).",
+    videos: [
+      { src: "videos/mlsmpm1.mp4", thumb: "videos/thumbs/mlsmpm1.jpg", label: "2D MLS-MPM" },
+      { src: "videos/mlsmpm2.mp4", thumb: "videos/thumbs/mlsmpm2.jpg", label: "3D Bridge Destruction" },
+    ],
     slides: "slides-dist/demo/index.html",
   },
   {
@@ -770,9 +796,9 @@ createApp({
       }
     }
 
-    function openVideo(post) {
-      videoModal.title = `${post.phase} — ${post.title}`;
-      videoModal.url   = post.video;
+    function openVideo(title, url) {
+      videoModal.title = title;
+      videoModal.url   = url;
       videoModal.open  = true;
     }
     function closeVideo() {
