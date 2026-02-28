@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLS-MPM Research Log</title>
+  <title>Taichi Posts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Syne:wght@500;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
@@ -502,8 +502,8 @@
 <!-- ══════════════════════════════════════════════════════ HEADER -->
 <header>
   <a href="#" class="site-brand">
-    <h1>MLS&#8209;MPM&nbsp;LOG</h1>
-    <span class="site-badge">Taichi · SIGGRAPH 2018</span>
+    <h1>TAICHI&nbsp;POSTS</h1>
+    <span class="site-badge">MLS-MPM · SIGGRAPH 2018</span>
   </a>
   <div class="hdr-right">
     <div class="live-dot"><i></i> 270K particles</div>
@@ -709,7 +709,6 @@ const IC = {
   slides:   `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
   code:     `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
   vids:     `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`,
-  download: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
   ext:      `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
 };
 
@@ -744,7 +743,11 @@ function buildCard(post, idx) {
   ).join("");
 
   let links = "";
-  if (post.slides) links += `<a href="${post.slides}" class="lnk lnk-slides" download>${IC.download} Slides (PPTX)</a>`;
+  if (post.slides) {
+    const raw = `https://raw.githubusercontent.com/Qervas/taichi/main/${post.slides}`;
+    const viewer = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(raw)}`;
+    links += `<a href="${viewer}" class="lnk lnk-slides" target="_blank" rel="noopener">${IC.slides} View Slides</a>`;
+  }
   if (post.code)   links += `<a href="${post.code}"   class="lnk lnk-code"   target="_blank" rel="noopener">${IC.ext} View Code</a>`;
 
   card.innerHTML = `
