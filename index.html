@@ -636,10 +636,12 @@ createApp({
 
     /* ── Filtered posts ── */
     const filteredPosts = computed(() =>
-      POSTS.filter(p =>
-        (activeCat.value === "all" || p.categories.includes(activeCat.value)) &&
-        (!activeDate.value || p.date === activeDate.value)
-      )
+      POSTS
+        .filter(p =>
+          (activeCat.value === "all" || p.categories.includes(activeCat.value)) &&
+          (!activeDate.value || p.date === activeDate.value)
+        )
+        .sort((a, b) => b.date.localeCompare(a.date))
     );
 
     const resultsMeta = computed(() => {
