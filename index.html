@@ -367,6 +367,35 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ── Share button ── */
+    .share-btn {
+      margin-left: auto; flex-shrink: 0;
+      background: none; border: 1px solid var(--border); color: var(--text-muted);
+      width: 24px; height: 24px; border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .share-btn:hover { color: var(--cyan); border-color: var(--cyan-dim); background: var(--cyan-glow); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      background: var(--cyan); color: var(--bg);
+      font-family: var(--ff-mono); font-size: .7rem; font-weight: 600;
+      letter-spacing: .08em; padding: .55em 1.4em; border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,212,255,.4); z-index: 999;
+      pointer-events: none;
+    }
+    .toast-enter-active, .toast-leave-active { transition: opacity .2s, transform .2s; }
+    .toast-enter-from, .toast-leave-to { opacity: 0; transform: translateX(-50%) translateY(8px); }
+
+    /* ── Linked-post highlight flash ── */
+    @keyframes highlight-flash {
+      0%, 100% { box-shadow: none; }
+      30%       { box-shadow: 0 0 0 2px var(--cyan), 0 0 32px rgba(0,212,255,.25); }
+    }
+    .card--highlight { animation: highlight-flash 2s ease; }
+
     /* ─── Code modal ────────────────────────────────────────────────── */
     .code-overlay { z-index: 300; }
     .code-modal {
@@ -497,6 +526,7 @@
             class="card"
             :class="post.categories.map(c => 'c-' + c)"
             :style="{ animationDelay: idx * 0.07 + 's' }"
+            :id="'post-' + post.id"
           >
             <!-- Single video thumbnail -->
             <div v-if="post.video" class="vid-thumb" @click="openVideo(post.title, post.video)" role="button" tabindex="0" :aria-label="'Play ' + post.title">
@@ -536,6 +566,9 @@
                     <span v-html="ICONS[c]"></span>{{ c }}
                   </span>
                 </div>
+                <button class="share-btn" @click="sharePost(post)" title="Copy link">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                </button>
               </div>
               <h2 class="card-title">{{ post.title }}</h2>
               <p  class="card-sub">{{ post.subtitle }}</p>
@@ -625,6 +658,11 @@
         </div>
       </div>
     </div>
+  </transition>
+
+  <!-- Toast -->
+  <transition name="toast">
+    <div v-if="toast" class="toast">Link copied!</div>
   </transition>
 
 </div><!-- #app -->
@@ -803,6 +841,17 @@ createApp({
       loading:  false,
     });
 
+    const toast = ref(false);
+    let _toastTimer = null;
+    function sharePost(post) {
+      const url = `${location.origin}${location.pathname}#post-${post.id}`;
+      navigator.clipboard.writeText(url).then(() => {
+        clearTimeout(_toastTimer);
+        toast.value = true;
+        _toastTimer = setTimeout(() => { toast.value = false; }, 2000);
+      });
+    }
+
     const slidesModalEl = ref(null);
 
     /* ── Calendar computed ── */
@@ -907,7 +956,21 @@ createApp({
         else closeModal();
       }
     }
-    onMounted(()   => window.addEventListener("keydown", onKey));
+    onMounted(() => {
+      window.addEventListener("keydown", onKey);
+      // Scroll to linked post if URL has #post-{id}
+      const hash = location.hash;
+      if (hash && hash.startsWith("#post-")) {
+        nextTick(() => {
+          const el = document.getElementById(hash.slice(1));
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.classList.add("card--highlight");
+            setTimeout(() => el.classList.remove("card--highlight"), 2000);
+          }
+        });
+      }
+    });
     onUnmounted(() => window.removeEventListener("keydown", onKey));
 
     return {
@@ -922,6 +985,7 @@ createApp({
       openSlides, closeModal, toggleSlidesFullscreen,
       openVideo, closeVideo,
       openCode, closeCode,
+      sharePost, toast,
       fmtDate,
     };
   }
