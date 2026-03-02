@@ -276,7 +276,8 @@
       color: var(--cyan-dim); padding: .15em .6em; border-radius: 3px;
     }
     .post-date { font-family: var(--ff-mono); font-size: .62rem; color: var(--text-dim); }
-    .tags { display: flex; gap: .35rem; margin-left: auto; flex-wrap: wrap; }
+    .card-meta-right { display: flex; align-items: center; gap: .5rem; margin-left: auto; flex-wrap: wrap; }
+    .tags { display: flex; gap: .35rem; flex-wrap: wrap; }
     .tag {
       font-family: var(--ff-mono); font-size: .56rem; text-transform: uppercase;
       letter-spacing: .05em; padding: .13em .5em; border-radius: 3px; border: 1px solid;
@@ -369,13 +370,13 @@
 
     /* ── Share button ── */
     .share-btn {
-      margin-left: auto; flex-shrink: 0;
-      background: none; border: 1px solid var(--border); color: var(--text-muted);
+      flex-shrink: 0;
+      background: none; border: 1px solid rgba(0,212,255,.3); color: var(--cyan-dim);
       width: 24px; height: 24px; border-radius: 4px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      transition: color .15s, border-color .15s, background .15s;
+      transition: color .15s, border-color .15s, background .15s, box-shadow .15s;
     }
-    .share-btn:hover { color: var(--cyan); border-color: var(--cyan-dim); background: var(--cyan-glow); }
+    .share-btn:hover { color: var(--cyan); border-color: var(--cyan); background: var(--cyan-glow); box-shadow: 0 0 8px rgba(0,212,255,.25); }
 
     /* ── Toast ── */
     .toast {
@@ -561,14 +562,16 @@
               <div class="card-meta">
                 <span class="phase-badge">{{ post.phase }}</span>
                 <span class="post-date">{{ fmtDate(post.date) }}</span>
-                <div class="tags">
-                  <span v-for="c in post.categories" :key="c" class="tag" :class="c">
-                    <span v-html="ICONS[c]"></span>{{ c }}
-                  </span>
+                <div class="card-meta-right">
+                  <div class="tags">
+                    <span v-for="c in post.categories" :key="c" class="tag" :class="c">
+                      <span v-html="ICONS[c]"></span>{{ c }}
+                    </span>
+                  </div>
+                  <button class="share-btn" @click="sharePost(post)" title="Copy link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  </button>
                 </div>
-                <button class="share-btn" @click="sharePost(post)" title="Copy link">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                </button>
               </div>
               <h2 class="card-title">{{ post.title }}</h2>
               <p  class="card-sub">{{ post.subtitle }}</p>
