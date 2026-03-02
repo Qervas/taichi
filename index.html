@@ -15,6 +15,8 @@
 
   <!-- Vue loads in parallel with HTML parsing; mount() runs after DOMContentLoaded -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" defer></script>
+  <!-- Syntax highlighting (loaded on first code-viewer open) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <style>
     /* ─── Tokens ────────────────────────────────────────────────────── */
     :root {
@@ -365,6 +367,28 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ─── Code modal ────────────────────────────────────────────────── */
+    .code-overlay { z-index: 300; }
+    .code-modal {
+      width: min(92vw, 860px); max-height: 88vh;
+      background: #1a1f2e; border: 1px solid var(--border-h); border-radius: 10px;
+      box-shadow: 0 0 80px rgba(167,139,250,.1), 0 24px 64px rgba(0,0,0,.8);
+      display: flex; flex-direction: column; overflow: hidden;
+      animation: modalIn .22s ease both;
+    }
+    .code-modal-body {
+      overflow-y: auto; flex: 1;
+      scrollbar-width: thin; scrollbar-color: rgba(167,139,250,.3) transparent;
+    }
+    .code-modal-body pre {
+      margin: 0; padding: 1.4rem 1.6rem;
+      font-family: var(--ff-mono); font-size: .78rem; line-height: 1.65;
+      background: transparent !important;
+    }
+    .code-modal-body code { background: transparent !important; }
+    /* Override hljs background to match our dark theme */
+    .code-modal-body .hljs { background: transparent; }
+
     /* ─── Responsive ────────────────────────────────────────────────── */
     @media (max-width: 780px) {
       .wrap { grid-template-columns: 1fr; padding: 1rem; }
@@ -520,9 +544,9 @@
                 <button v-if="post.slides" class="lnk lnk-slides" @click="openSlides(post)">
                   <span v-html="ICONS.slides"></span> View Slides
                 </button>
-                <a v-if="post.code" :href="post.code" class="lnk lnk-code" target="_blank" rel="noopener">
-                  <span v-html="ICONS.ext"></span> View Code
-                </a>
+                <button v-if="post.code" class="lnk lnk-code" @click="openCode(post)">
+                  <span v-html="ICONS.code"></span> View Code
+                </button>
                 <a v-for="r in post.refs" :key="r.url" :href="r.url" class="lnk lnk-ref" target="_blank" rel="noopener">
                   <span v-html="ICONS.ref"></span> {{ r.label }}
                 </a>
@@ -585,8 +609,27 @@
     </div>
   </transition>
 
+  <!-- ══════════════════════════════════════════ CODE MODAL -->
+  <transition name="fade">
+    <div v-if="codeModal.open" class="modal-backdrop code-overlay" @click.self="closeCode">
+      <div class="code-modal">
+        <div class="modal-bar">
+          <span class="modal-title">{{ codeModal.filename }}</span>
+          <button class="modal-close" @click="closeCode">✕</button>
+        </div>
+        <div class="code-modal-body">
+          <div v-if="codeModal.loading" class="modal-loading">
+            <div class="spinner"></div> Loading…
+          </div>
+          <pre v-else><code class="language-python" v-html="codeModal.html"></code></pre>
+        </div>
+      </div>
+    </div>
+  </transition>
+
 </div><!-- #app -->
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
 // Vue is loaded with defer; this inline script runs after it because it's
 // at the bottom of <body> — but guard anyway for robustness.
@@ -614,11 +657,12 @@ const POSTS = [
     title: "Water Wheel",
     subtitle: "MLS-MPM + grid-velocity rigid coupling on a 64³ grid",
     date: "2026-03-02",
-    categories: ["vids"],
+    categories: ["vids", "code"],
     description:
       "First rigid–fluid coupling experiment. A kinematic water wheel spins at fixed ω inside a 64³ MLS-MPM grid. After the P2G step, every grid node inside the wheel's volume has its velocity overridden with v = ω × r, forcing the surrounding water particles to respond to the rotating boundary — no explicit constraint forces needed, just a grid-velocity override.",
     video: "videos/water_wheel_1.mp4",
     thumb: "videos/thumbs/water_wheel_1.jpg",
+    code: "code/phase5_wheel.py",
   },
   {
     id: 6,
@@ -662,7 +706,7 @@ const POSTS = [
     video: "videos/water_simulation_2d.mp4",
     thumb: "videos/thumbs/water_simulation_2d.jpg",
     slides: "slides-dist/phase2/index.html",
-    code: "https://github.com/Qervas/taichi/blob/main/src/phase2_water.py",
+    code: "code/phase2_water.py",
   },
   {
     id: 4,
@@ -676,7 +720,7 @@ const POSTS = [
     video: "videos/water_simulation_3d_pillars.mp4",
     thumb: "videos/thumbs/water_simulation_3d_pillars.jpg",
     slides: "slides-dist/phase2/index.html",
-    code: "https://github.com/Qervas/taichi/blob/main/src/phase3_3d.py",
+    code: "code/phase3_3d.py",
   },
   {
     id: 5,
@@ -688,7 +732,7 @@ const POSTS = [
     description:
       "Extends Phase 3 to a full river-flood scenario on a 128×64×64 domain. Replaces Drucker-Prager with Rankine tensile failure for realistic concrete cracking. Adds pile foundation scour erosion — the #1 real-world cause of bridge collapse. Rubble switches to J-based EOS for hard-chunk behaviour instead of sand-like scatter.",
     slides: "slides-dist/phase2/index.html",
-    code: "https://github.com/Qervas/taichi/blob/main/src/phase4_flood.py",
+    code: "code/phase4_flood.py",
   },
 ];
 
@@ -750,6 +794,13 @@ createApp({
       open:  false,
       title: "",
       url:   "",
+    });
+
+    const codeModal = reactive({
+      open:     false,
+      filename: "",
+      html:     "",
+      loading:  false,
     });
 
     const slidesModalEl = ref(null);
@@ -835,10 +886,24 @@ createApp({
       videoModal.url  = "";
     }
 
+    async function openCode(post) {
+      codeModal.filename = post.code.split("/").pop();
+      codeModal.html     = "";
+      codeModal.loading  = true;
+      codeModal.open     = true;
+      const text = await fetch(post.code).then(r => r.text());
+      codeModal.html    = hljs.highlight(text, { language: "python" }).value;
+      codeModal.loading  = false;
+    }
+    function closeCode() {
+      codeModal.open = false;
+    }
+
     /* ── ESC to close any modal ── */
     function onKey(e) {
       if (e.key === "Escape") {
-        if (videoModal.open) closeVideo();
+        if (codeModal.open)  closeCode();
+        else if (videoModal.open) closeVideo();
         else closeModal();
       }
     }
@@ -849,13 +914,14 @@ createApp({
       /* data */
       STATS, CATS, ICONS, DOW, POSTS,
       /* state */
-      activeCat, activeDate, calYear, calMonth, modal, videoModal, slidesModalEl,
+      activeCat, activeDate, calYear, calMonth, modal, videoModal, codeModal, slidesModalEl,
       /* computed */
       calMonthLabel, calDays, filteredPosts, resultsMeta,
       /* methods */
       prevMonth, nextMonth, toggleDate,
       openSlides, closeModal, toggleSlidesFullscreen,
       openVideo, closeVideo,
+      openCode, closeCode,
       fmtDate,
     };
   }
