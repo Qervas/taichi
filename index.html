@@ -740,8 +740,9 @@ createApp({
     /* ── Reactive state ── */
     const activeCat  = ref("all");
     const activeDate = ref(null);
-    const calYear    = ref(2026);
-    const calMonth   = ref(1);    // 0-indexed; 1 = February
+    const _now       = new Date();
+    const calYear    = ref(_now.getFullYear());
+    const calMonth   = ref(_now.getMonth());   // 0-indexed
 
     const modal = reactive({
       open:   false,
