@@ -609,6 +609,18 @@ const POSTS = [
     slides: "slides-dist/phase1/index.html",
   },
   {
+    id: 7,
+    phase: "Phase 05",
+    title: "Water Wheel",
+    subtitle: "MLS-MPM + grid-velocity rigid coupling on a 64³ grid",
+    date: "2026-03-02",
+    categories: ["vids"],
+    description:
+      "First rigid–fluid coupling experiment. A kinematic water wheel spins at fixed ω inside a 64³ MLS-MPM grid. After the P2G step, every grid node inside the wheel's volume has its velocity overridden with v = ω × r, forcing the surrounding water particles to respond to the rotating boundary — no explicit constraint forces needed, just a grid-velocity override.",
+    video: "videos/water_wheel_1.mp4",
+    thumb: "videos/thumbs/water_wheel_1.jpg",
+  },
+  {
     id: 6,
     phase: "Paper",
     title: "MLS-MPM Paper Breakdown",
