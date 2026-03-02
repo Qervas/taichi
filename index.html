@@ -355,18 +355,60 @@
     .modal-fs:hover { color: var(--cyan); border-color: var(--cyan-dim); background: var(--cyan-glow); }
     .modal-body { flex: 1; position: relative; background: #000; }
     .modal-body iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
-    .modal-loading {
-      position: absolute; inset: 0;
+    /* ─── Page loader ───────────────────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: .75rem; font-family: var(--ff-mono); font-size: .68rem; color: var(--text-dim);
-      pointer-events: none;
+      gap: 2rem;
+      transition: opacity .5s ease, visibility .5s ease;
     }
-    .spinner {
-      width: 28px; height: 28px;
-      border: 2px solid var(--border); border-top-color: var(--amber);
-      border-radius: 50%; animation: spin .7s linear infinite;
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    .ldr-grid {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .ldr-grid canvas { width: 100%; height: 100%; opacity: .18; }
+
+    .ldr-body { position: relative; z-index: 1; text-align: center; }
+
+    .ldr-title {
+      font-family: var(--ff-disp); font-size: clamp(1.4rem, 4vw, 2.4rem);
+      font-weight: 900; letter-spacing: .18em; color: var(--cyan);
+      text-shadow: 0 0 30px rgba(0,212,255,.6);
+      overflow: hidden; white-space: nowrap;
+      width: 0; animation: ldr-reveal 1s steps(12, end) .1s forwards;
+    }
+    @keyframes ldr-reveal { to { width: 12ch; } }
+
+    .ldr-sub {
+      font-family: var(--ff-mono); font-size: .65rem; color: var(--text-dim);
+      letter-spacing: .18em; text-transform: uppercase;
+      margin-top: .5rem; opacity: 0;
+      animation: ldr-fade .4s ease .9s forwards;
+    }
+    @keyframes ldr-fade { to { opacity: 1; } }
+
+    .ldr-bar-wrap {
+      width: 200px; height: 2px;
+      background: rgba(0,212,255,.1); border-radius: 2px; overflow: hidden;
+      margin-top: 1.6rem; opacity: 0;
+      animation: ldr-fade .3s ease .8s forwards;
+    }
+    .ldr-bar-fill {
+      height: 100%; width: 0%; background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: ldr-bar 1.1s cubic-bezier(.4,0,.2,1) .3s forwards;
+    }
+    @keyframes ldr-bar { to { width: 100%; } }
+
+    .ldr-scan {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan) 50%, transparent);
+      opacity: .4; top: 0;
+      animation: ldr-scan 1.4s linear .1s forwards;
+    }
+    @keyframes ldr-scan { to { top: 100%; } }
 
     /* ── Share button ── */
     .share-btn {
@@ -434,6 +476,17 @@
   </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════ PAGE LOADER -->
+<div id="loader">
+  <div class="ldr-grid"><canvas id="ldr-canvas"></canvas></div>
+  <div class="ldr-scan"></div>
+  <div class="ldr-body">
+    <div class="ldr-title">TAICHI POSTS</div>
+    <div class="ldr-sub">MLS-MPM · SIGGRAPH 2018</div>
+    <div class="ldr-bar-wrap"><div class="ldr-bar-fill"></div></div>
+  </div>
+</div>
 
 <div id="app">
 
@@ -615,15 +668,10 @@
           </div>
         </div>
         <div class="modal-body">
-          <div v-if="!modal.loaded" class="modal-loading">
-            <div class="spinner"></div>
-            Loading slides…
-          </div>
           <iframe
             :src="modal.url"
             title="Slide viewer"
             allowfullscreen
-            @load="modal.loaded = true"
           ></iframe>
         </div>
       </div>
@@ -654,10 +702,7 @@
           <button class="modal-close" @click="closeCode">✕</button>
         </div>
         <div class="code-modal-body">
-          <div v-if="codeModal.loading" class="modal-loading">
-            <div class="spinner"></div> Loading…
-          </div>
-          <pre v-else><code class="language-python" v-html="codeModal.html"></code></pre>
+          <pre><code class="language-python" v-html="codeModal.html"></code></pre>
         </div>
       </div>
     </div>
@@ -671,6 +716,65 @@
 </div><!-- #app -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+// Particle grid on loader canvas
+(function() {
+  const canvas = document.getElementById("ldr-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  let W, H, pts, animId;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    pts = [];
+    const cols = Math.ceil(W / 38), rows = Math.ceil(H / 38);
+    for (let r = 0; r <= rows; r++)
+      for (let c = 0; c <= cols; c++)
+        pts.push({ x: c * 38, y: r * 38, ox: c * 38, oy: r * 38,
+                   vx: (Math.random()-.5)*.4, vy: (Math.random()-.5)*.4 });
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = "rgba(0,212,255,1)";
+    ctx.lineWidth = .5;
+    pts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (Math.abs(p.x - p.ox) > 8) p.vx *= -1;
+      if (Math.abs(p.y - p.oy) > 8) p.vy *= -1;
+    });
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 50) {
+          ctx.globalAlpha = (1 - d/50) * .5;
+          ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke();
+        }
+      }
+    }
+    ctx.globalAlpha = .7;
+    ctx.fillStyle = "rgba(0,212,255,1)";
+    pts.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 1.2, 0, Math.PI*2); ctx.fill(); });
+    ctx.globalAlpha = 1;
+    animId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener("resize", resize);
+  draw(0);
+
+  // Stop once loader hides
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("loader").classList.contains("hidden")) {
+      cancelAnimationFrame(animId);
+      obs.disconnect();
+    }
+  });
+  obs.observe(document.getElementById("loader"), { attributes: true });
+})();
+</script>
 <script>
 // Vue is loaded with defer; this inline script runs after it because it's
 // at the bottom of <body> — but guard anyway for robustness.
@@ -824,12 +928,7 @@ createApp({
     const calYear    = ref(_now.getFullYear());
     const calMonth   = ref(_now.getMonth());   // 0-indexed
 
-    const modal = reactive({
-      open:   false,
-      title:  "",
-      url:    "",
-      loaded: false,
-    });
+    const modal = reactive({ open: false, title: "", url: "" });
 
     const videoModal = reactive({
       open:  false,
@@ -909,9 +1008,8 @@ createApp({
     /* ── Modal methods ── */
     function openSlides(post) {
       modal.title  = `${post.phase} — ${post.title}`;
-      modal.url    = slideEmbedUrl(post.slides);
-      modal.loaded = false;
-      modal.open   = true;
+      modal.url  = slideEmbedUrl(post.slides);
+      modal.open = true;
     }
     function closeModal() {
       modal.open  = false;
@@ -960,6 +1058,10 @@ createApp({
       }
     }
     onMounted(() => {
+      // Hide page loader
+      const loader = document.getElementById("loader");
+      if (loader) loader.classList.add("hidden");
+
       window.addEventListener("keydown", onKey);
       // Scroll to linked post if URL has #post-{id}
       const hash = location.hash;
