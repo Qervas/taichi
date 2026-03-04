@@ -1,0 +1,17 @@
+/* ─── Tokens ────────────────────────────────────────────────────── */
+:root {
+  --bg:        #080d1a;
+  --bg-card:   #0e1526;
+  --border:    rgba(0,212,255,.1);
+  --border-h:  rgba(0,212,255,.32);
+  --cyan:      #00d4ff;
+  --cyan-dim:  rgba(0,212,255,.55);
+  --purple:    #a78bfa;
+  --accent-2:  #f472b6;
+  --text:      rgba(255,255,255,.88);
+  --text-dim:  rgba(255,255,255,.5);
+  --ff-head:   'Syne', sans-serif;
+  --ff-brand:  'Orbitron', sans-serif;
+  --ff-body:   'DM Sans', sans-serif;
+  --ff-mono:   'JetBrains Mono', monospace;
+}
