@@ -52,7 +52,7 @@
       <h2 class="card-title">{{ post.title }}</h2>
       <p class="card-sub">{{ post.subtitle }}</p>
       <p class="card-desc">{{ post.description }}</p>
-      <div v-if="post.slides || post.code || post.refs" class="card-links">
+      <div v-if="post.slides || post.code || post.refs || post.video || post.videos" class="card-links">
         <button v-if="post.slides" class="lnk lnk-slides" @click="$emit('open-slides', post)">
           <span v-html="ICONS.slides"></span> View Slides
         </button>
@@ -62,12 +62,32 @@
         <a v-for="r in post.refs" :key="r.url" :href="r.url" class="lnk lnk-ref" target="_blank" rel="noopener">
           <span v-html="ICONS.ref"></span> {{ r.label }}
         </a>
+
+        <!-- Download buttons -->
+        <a v-if="post.video" :href="post.video" :download="post.phase + ' - ' + post.title + '.mp4'" class="lnk lnk-dl-video">
+          <span v-html="ICONS.download"></span> Video
+        </a>
+        <a v-for="v in post.videos" :key="'dl-' + v.src" :href="v.src" :download="post.phase + ' - ' + v.label + '.mp4'" class="lnk lnk-dl-video">
+          <span v-html="ICONS.download"></span> {{ v.label }}
+        </a>
+
+        <button v-if="post.code && !post.codeFiles" class="lnk lnk-dl-code" @click="downloadSingleCode(post)">
+          <span v-html="ICONS.download"></span> Code
+        </button>
+        <button v-if="post.codeFiles" class="lnk lnk-dl-code" :disabled="zipping" @click="downloadCodeZip(post)">
+          <span v-html="ICONS.download"></span> {{ zipping ? 'Zipping…' : 'Code (.zip)' }}
+        </button>
+
+        <a v-if="post.slides" :href="post.slides" target="_blank" class="lnk lnk-dl-slides">
+          <span v-html="ICONS.download"></span> Slides ↗
+        </a>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { ICONS, fmtDate } from '../data/posts.js'
 
 defineProps({
@@ -75,6 +95,38 @@ defineProps({
   index: { type: Number, default: 0 },
 })
 defineEmits(['open-slides', 'open-video', 'open-code', 'share'])
+
+const zipping = ref(false)
+
+function downloadSingleCode(post) {
+  const a = document.createElement('a')
+  a.href = post.code
+  a.download = post.code.split('/').pop()
+  a.click()
+}
+
+async function downloadCodeZip(post) {
+  if (zipping.value) return
+  zipping.value = true
+  try {
+    const { default: JSZip } = await import('jszip')
+    const zip = new JSZip()
+    for (const file of post.codeFiles) {
+      const url = `${post.code}/${file}`
+      const resp = await fetch(url)
+      const text = await resp.text()
+      zip.file(file, text)
+    }
+    const blob = await zip.generateAsync({ type: 'blob' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `${post.phase} - ${post.title}.zip`
+    a.click()
+    URL.revokeObjectURL(a.href)
+  } finally {
+    zipping.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -182,4 +234,12 @@ defineEmits(['open-slides', 'open-video', 'open-code', 'share'])
 .lnk-code:hover   { background: rgba(52,211,153,.16); }
 .lnk-ref    { background: rgba(255,255,255,.04); color: var(--text-dim); border-color: var(--border); }
 .lnk-ref:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+.lnk-dl-video { background: rgba(251,191,36,.08); color: #fbbf24; border-color: rgba(251,191,36,.18); text-decoration: none; }
+.lnk-dl-video:hover { background: rgba(251,191,36,.16); }
+.lnk-dl-code  { background: rgba(52,211,153,.08); color: #34d399; border-color: rgba(52,211,153,.18); }
+.lnk-dl-code:hover  { background: rgba(52,211,153,.16); }
+.lnk-dl-code:disabled { opacity: .6; cursor: wait; }
+.lnk-dl-slides { background: rgba(167,139,250,.08); color: #a78bfa; border-color: rgba(167,139,250,.18); text-decoration: none; }
+.lnk-dl-slides:hover { background: rgba(167,139,250,.16); }
 </style>
