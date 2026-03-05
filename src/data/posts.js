@@ -44,6 +44,23 @@ export const POSTS = [
     ],
   },
   {
+    id: 10,
+    phase: "Phase 07",
+    title: "City Flood Simulation",
+    subtitle: "2D SWE + HLLC/MUSCL · Two-Way Car Coupling · Real-Time Preview",
+    date: "2026-03-05",
+    categories: ["slides", "vids", "code"],
+    description:
+      "2D city flood simulation from top view. Shallow water equations with HLLC Riemann solver and MUSCL reconstruction, two-way car-fluid coupling (water→car: buoyancy + drag + torque, car→water: volume displacement + momentum source), Manning friction, CFL adaptive timestep, and continuous inflow boundary. 30 cars on a 512×512 grid, 60s simulation on Taichi GPU.",
+    video: "videos/phase7-city-flood.mp4",
+    thumb: "videos/thumbs/phase7-city-flood.jpg",
+    slides: "slides-dist/phase7-city-flood/index.html",
+    code: "code/phase7",
+    codeFiles: [
+      "run.py", "car_coupling.py", "city_data.py",
+    ],
+  },
+  {
     id: 9,
     phase: "Phase 06",
     title: "Flood Rendering Pipeline",
