@@ -78,9 +78,9 @@
           <span v-html="ICONS.download"></span> {{ zipping ? 'Zipping…' : 'Code (.zip)' }}
         </button>
 
-        <a v-if="post.slides" :href="post.slides" target="_blank" class="lnk lnk-dl-slides">
-          <span v-html="ICONS.download"></span> Slides ↗
-        </a>
+        <button v-if="post.slides" class="lnk lnk-dl-slides" @click="printSlides(post)">
+          <span v-html="ICONS.download"></span> Slides (PDF)
+        </button>
       </div>
     </div>
   </div>
@@ -103,6 +103,15 @@ function downloadSingleCode(post) {
   a.href = post.code
   a.download = post.code.split('/').pop()
   a.click()
+}
+
+function printSlides(post) {
+  const url = post.slides.replace(/\/?$/, '?print')
+  const win = window.open(url, '_blank')
+  if (!win) return
+  win.addEventListener('load', () => {
+    setTimeout(() => win.print(), 600)
+  })
 }
 
 async function downloadCodeZip(post) {
@@ -240,6 +249,6 @@ async function downloadCodeZip(post) {
 .lnk-dl-code  { background: rgba(52,211,153,.08); color: #34d399; border-color: rgba(52,211,153,.18); }
 .lnk-dl-code:hover  { background: rgba(52,211,153,.16); }
 .lnk-dl-code:disabled { opacity: .6; cursor: wait; }
-.lnk-dl-slides { background: rgba(167,139,250,.08); color: #a78bfa; border-color: rgba(167,139,250,.18); text-decoration: none; }
+.lnk-dl-slides { background: rgba(167,139,250,.08); color: #a78bfa; border-color: rgba(167,139,250,.18); }
 .lnk-dl-slides:hover { background: rgba(167,139,250,.16); }
 </style>
