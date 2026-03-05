@@ -141,7 +141,7 @@ async function downloadCodeZip(post) {
 /* ── Thumbnail / Video ── */
 .vid-thumb {
   position: relative; cursor: pointer; overflow: hidden;
-  aspect-ratio: 16/9; background: #000;
+  aspect-ratio: 2.8; background: #000;
 }
 .vid-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
 .vid-thumb:hover img { transform: scale(1.04); }
