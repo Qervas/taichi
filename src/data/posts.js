@@ -1,6 +1,17 @@
 /* ━━━━━━━━━━━━━━━━━━━━ STATIC DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export const POSTS = [
   {
+    id: 11,
+    phase: "Survey",
+    title: "AI Physics Simulation Survey",
+    subtitle: "2024–2026 · Neural Operators · GNN · 3DGS+MPM · Video World Models",
+    date: "2026-03-06",
+    categories: ["slides"],
+    description:
+      "Comprehensive survey of 30+ papers on AI-driven physics simulation (2024–2026). Covers two main tracks: AI-accelerated solvers (FNO, GNS, Walrus, PhysiX, weather foundation models, Flow Matching) and video-to-physics parameter extraction (PAC-NeRF → GIC → OmniPhysGS, PhysDreamer, PhysTwin, V-JEPA). Includes glossary, trend analysis, and connections to our MLS-MPM work.",
+    slides: "slides-dist/ai-physics-survey/index.html",
+  },
+  {
     id: 1,
     phase: "Phase 01",
     title: "Smoke Simulation",
