@@ -1,0 +1,68 @@
+digraph Walrus {
+    bgcolor="transparent"
+    rankdir=LR
+    fontname="Arial"
+    node [fontname="Arial", fontsize=11, fontcolor="#c0c8e0", style="filled,rounded", shape=box, penwidth=0]
+    edge [fontname="Arial", fontsize=9, fontcolor="#8090b0", color="#4a5568"]
+
+    // Multi-domain inputs (stacked)
+    subgraph cluster_input {
+        label="Multi-Domain Input"
+        labeljust=c
+        fontname="Arial"
+        fontsize=10
+        fontcolor="#fbbf24"
+        color="#92400e"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#1c1007"
+
+        fluid [label="Fluid\nNavier-Stokes", fillcolor="#92400e", fontcolor="#fbbf24"]
+        em [label="Electromagnetics\nMaxwell", fillcolor="#92400e", fontcolor="#fbbf24"]
+        weather [label="Weather\nShallow Water", fillcolor="#92400e", fontcolor="#fbbf24"]
+        other [label="16 PDE Systems\n...", fillcolor="#78350f", fontcolor="#d97706"]
+    }
+
+    // Patch
+    patch [label="Spatiotemporal\nPatch Split", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // Perceiver encoder
+    encoder [label="Vision\nTransformer\nEncoder", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Latent Transformer
+    subgraph cluster_latent {
+        label="Shared Latent Space"
+        labeljust=c
+        fontname="Arial"
+        fontsize=10
+        fontcolor="#c4b5fd"
+        color="#6d28d9"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#1a0533"
+
+        latent [label="Latent\nTransformer\n1.3B params", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+        domain_note [label="Domain-Agnostic\nRepresentation", fillcolor="#3b0764", fontcolor="#a78bfa", shape=note]
+    }
+
+    // Decoder
+    decoder [label="Decoder\nReconstruct", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Output
+    output [label="Output Field\nu(x, t+dt)", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Training note
+    training [label="96x H100\n15TB The Well", fillcolor="#1f2937", fontcolor="#6b7280", shape=note]
+
+    // Edges
+    fluid -> patch
+    em -> patch
+    weather -> patch
+    other -> patch
+    patch -> encoder [label="patches"]
+    encoder -> latent [label="cross-attn"]
+    domain_note -> latent [style=dotted, arrowhead=none, color="#6d28d9"]
+    latent -> decoder [label="self-attn"]
+    decoder -> output [label="next state\nprediction"]
+    training -> latent [style=dotted, arrowhead=none, color="#4a5568"]
+}

@@ -1,0 +1,68 @@
+digraph PhysiX {
+    bgcolor="transparent"
+    rankdir=LR
+    fontname="Arial"
+    node [fontname="Arial", fontsize=11, fontcolor="#c0c8e0", style="filled,rounded", shape=box, penwidth=0]
+    edge [fontname="Arial", fontsize=9, fontcolor="#8090b0", color="#4a5568"]
+
+    // Input
+    field [label="Physical Field\nu(x, t)", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Patch division
+    patches [label="Divide into\nPatches", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // VQ-VAE
+    subgraph cluster_vqvae {
+        label="VQ-VAE Tokenizer"
+        labeljust=c
+        fontname="Arial"
+        fontsize=10
+        fontcolor="#c4b5fd"
+        color="#6d28d9"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#1a0533"
+
+        encode_vq [label="Encoder\nContinuous", fillcolor="#312e81", fontcolor="#a78bfa"]
+        codebook [label="Codebook\nQuantize", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+        encode_vq -> codebook [label="nearest\nneighbor"]
+    }
+
+    // Token sequence
+    tokens [label="Discrete Tokens\n81M tokens", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+
+    // GPT
+    subgraph cluster_gpt {
+        label="GPT-Style Transformer"
+        labeljust=c
+        fontname="Arial"
+        fontsize=10
+        fontcolor="#60a5fa"
+        color="#1e40af"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#0c1929"
+
+        causal [label="Causal\nAttention\n4.5B params", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+        predict [label="Next-Token\nPrediction", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+        causal -> predict [label="autoregressive"]
+    }
+
+    // De-tokenize
+    detok [label="De-Tokenize\nVQ-VAE Decoder", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+
+    // Output
+    next_field [label="Next Timestep\nu(x, t+dt)", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Scale note
+    scale [label="4.5B params\n81M tokens", fillcolor="#1f2937", fontcolor="#6b7280", shape=note]
+
+    // Edges
+    field -> patches [label="spatial\ndiscretize"]
+    patches -> encode_vq [label="per patch"]
+    codebook -> tokens [label="discrete\nIDs"]
+    tokens -> causal [label="token\nsequence"]
+    predict -> detok [label="predicted\ntokens"]
+    detok -> next_field [label="reconstruct"]
+    scale -> causal [style=dotted, arrowhead=none, color="#4a5568"]
+}

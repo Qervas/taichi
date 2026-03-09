@@ -1,0 +1,56 @@
+digraph FNO {
+    bgcolor="transparent"
+    rankdir=LR
+    fontname="Arial"
+    node [fontname="Arial", fontsize=11, fontcolor="#c0c8e0", style="filled,rounded", shape=box, penwidth=0]
+    edge [fontname="Arial", fontsize=9, fontcolor="#8090b0", color="#4a5568"]
+
+    // Input
+    input [label="Input u(x)\nParameter Field", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Lift
+    lift [label="Lift P\nProject to d_v", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Fourier Layer subgraph
+    subgraph cluster_fourier {
+        label="Fourier Layer  x L"
+        labeljust=c
+        fontname="Arial"
+        fontsize=11
+        fontcolor="#c4b5fd"
+        color="#6d28d9"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#1a0533"
+
+        fft [label="FFT", fillcolor="#312e81", fontcolor="#a78bfa"]
+        spectral [label="R Multiply\nFilter High Freq", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+        ifft [label="IFFT", fillcolor="#312e81", fontcolor="#a78bfa"]
+
+        fft -> spectral [label="k_max modes"]
+        spectral -> ifft
+    }
+
+    // Skip connection node
+    skip [label="W . x\nSkip (Linear)", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Add + activation
+    add [label="+\nAdd", fillcolor="#1f2937", fontcolor="#c0c8e0", shape=circle, width=0.5]
+    sigma [label="GeLU\nActivation", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Project
+    project [label="Project Q\nReduce dim", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Output
+    output [label="Output s(x)\nSolution Field", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Main flow
+    input -> lift [label="d_in"]
+    lift -> fft [label="d_v"]
+    lift -> skip [style=dashed, label="bypass"]
+    ifft -> add [label="global"]
+    skip -> add [label="local"]
+    add -> sigma
+    sigma -> project [label="repeat L"]
+    project -> output [label="d_out"]
+}

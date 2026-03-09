@@ -1,0 +1,55 @@
+digraph PhysDreamer {
+    bgcolor="transparent"
+    rankdir=LR
+    fontname="Arial"
+    node [fontname="Arial", fontsize=11, fontcolor="#c0c8e0", style="filled,rounded", shape=box, penwidth=0]
+    edge [fontname="Arial", fontsize=9, fontcolor="#8090b0", color="#4a5568"]
+
+    // Static 3DGS
+    static_gs [label="Static 3DGS\n(No deformation\nvideo needed)", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Material field
+    material [label="Assign Material\nField (theta)", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // MPM simulation
+    mpm [label="Differentiable\nMPM Simulation\n(Random Force)", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // Render
+    render [label="Render Video\nvia 3DGS", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // SVD
+    subgraph cluster_svd {
+        label="Video Diffusion Prior"
+        labeljust=c
+        fontname="Arial"
+        fontsize=10
+        fontcolor="#c4b5fd"
+        color="#6d28d9"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#1a0533"
+
+        add_noise [label="Add Noise\nto Rendered", fillcolor="#312e81", fontcolor="#a78bfa"]
+        svd [label="SVD Denoise\n(Frozen Model)", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+        add_noise -> svd [label="noised\nframes"]
+    }
+
+    // SDS loss
+    sds [label="SDS Loss\neps_hat - eps", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+
+    // Backprop
+    backprop [label="Backprop to\nMaterial Params", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+
+    // Key insight
+    insight [label="Key Insight:\nNo ground-truth\nphysics needed!\nVideo diffusion\nIS the prior", fillcolor="#1f2937", fontcolor="#6b7280", shape=note]
+
+    // Edges
+    static_gs -> material [label="assign\nper-Gaussian"]
+    material -> mpm [label="params theta"]
+    mpm -> render [label="deformed\nGaussians"]
+    render -> add_noise [label="predicted\nvideo"]
+    svd -> sds [label="denoising\ndirection"]
+    sds -> backprop [label="gradient\nsignal", color="#ef4444", fontcolor="#ef4444"]
+    backprop -> material [label="update theta\niterate", color="#ef4444", fontcolor="#ef4444", style=dashed]
+    insight -> sds [style=dotted, arrowhead=none, color="#4a5568"]
+}

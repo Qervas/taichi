@@ -1,0 +1,55 @@
+digraph GNS {
+    bgcolor="transparent"
+    rankdir=LR
+    fontname="Arial"
+    node [fontname="Arial", fontsize=11, fontcolor="#c0c8e0", style="filled,rounded", shape=box, penwidth=0]
+    edge [fontname="Arial", fontsize=9, fontcolor="#8090b0", color="#4a5568"]
+
+    // Input
+    particles [label="Particles\npos, vel, type", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Graph build
+    graph_build [label="Build Radius\nGraph (k-NN)", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // Encoder
+    encoder [label="Encoder\nMLPs x 2", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Message passing
+    subgraph cluster_mp {
+        label="Message Passing  x M"
+        labeljust=c
+        fontname="Arial"
+        fontsize=11
+        fontcolor="#c4b5fd"
+        color="#6d28d9"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#1a0533"
+
+        edge_update [label="Edge Update\nphi_e MLP", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+        node_agg [label="Node Aggregate\nphi_v MLP", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+
+        edge_update -> node_agg [label="sum edges"]
+    }
+
+    // Decoder
+    decoder [label="Decoder\nMLP", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Acceleration
+    accel [label="Acceleration\nper particle", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Integration
+    integrate [label="Euler Integrate\nv,x update", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // Next state
+    next [label="Next State\nt + dt", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Edges
+    particles -> graph_build [label="r < r_connect"]
+    graph_build -> encoder [label="node+edge\nfeatures"]
+    encoder -> edge_update [label="embeddings"]
+    node_agg -> decoder [label="M rounds"]
+    decoder -> accel [label="a_i"]
+    accel -> integrate [label="a * dt"]
+    integrate -> next [label="x, v"]
+}

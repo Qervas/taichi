@@ -1,0 +1,56 @@
+digraph GIC {
+    bgcolor="transparent"
+    rankdir=LR
+    fontname="Arial"
+    node [fontname="Arial", fontsize=11, fontcolor="#c0c8e0", style="filled,rounded", shape=box, penwidth=0]
+    edge [fontname="Arial", fontsize=9, fontcolor="#8090b0", color="#4a5568"]
+
+    // Input
+    video [label="Multi-View\nVideo (RGBD)", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // 3DGS reconstruction
+    gs_recon [label="3DGS\nReconstruction\n(t=0)", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Bridge
+    subgraph cluster_bridge {
+        label="Continuum-Gaussian Bridge"
+        labeljust=c
+        fontname="Arial"
+        fontsize=10
+        fontcolor="#c4b5fd"
+        color="#6d28d9"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#1a0533"
+
+        gs_to_mpm [label="Gaussian\n  to MPM\nmu_k = x_k", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+        mpm_to_gs [label="MPM to\nGaussian\nS'=F.S.F^T", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+    }
+
+    // Differentiable MPM
+    diff_mpm [label="Differentiable\nMPM\n(P2G -> G2P)", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // 3DGS render
+    render [label="3DGS\nRendering\n(Differentiable)", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Loss
+    loss [label="Loss\nL1 + SSIM\n+ Depth", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Optimize
+    optimize [label="Optimize\nE, v params", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+
+    // Evolution note
+    evolution [label="Evolution:\nNeRF -> 3DGS\n6000x faster", fillcolor="#1f2937", fontcolor="#6b7280", shape=note]
+
+    // Edges
+    video -> gs_recon [label="train 3DGS"]
+    gs_recon -> gs_to_mpm [label="Gaussians\nmu, S, c, a"]
+    gs_to_mpm -> diff_mpm [label="particles\n+ learnable E,v"]
+    diff_mpm -> mpm_to_gs [label="new x, F"]
+    mpm_to_gs -> render [label="deformed\nGaussians"]
+    render -> loss [label="predicted\nimage"]
+    video -> loss [style=dashed, label="ground\ntruth", constraint=false, color="#6b7280"]
+    loss -> optimize [label="backprop", color="#ef4444", fontcolor="#ef4444"]
+    optimize -> diff_mpm [label="update", color="#ef4444", fontcolor="#ef4444", style=dashed]
+    evolution -> gs_recon [style=dotted, arrowhead=none, color="#4a5568"]
+}

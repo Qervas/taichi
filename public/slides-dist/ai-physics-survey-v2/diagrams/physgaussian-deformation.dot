@@ -1,0 +1,58 @@
+digraph PhysGaussian {
+    bgcolor="transparent"
+    rankdir=LR
+    fontname="Arial"
+    node [fontname="Arial", fontsize=11, fontcolor="#c0c8e0", style="filled,rounded", shape=box, penwidth=0]
+    edge [fontname="Arial", fontsize=9, fontcolor="#8090b0", color="#4a5568"]
+
+    // Input 3DGS
+    scene [label="3DGS Scene\nN Gaussians\n{mu, S, c, a}", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Embed in continuum
+    embed [label="Embed in\nContinuum\nAssign Material", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // Constitutive model
+    consti [label="Constitutive\nModel\nsigma = f(F)", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // MPM step
+    mpm [label="MPM Step\nP2G -> Solve\n-> G2P", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // Deformation gradient
+    defgrad [label="Deformation\nGradient F\nUpdate x, F", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+
+    // Transform Gaussian
+    subgraph cluster_transform {
+        label="Transform Gaussian"
+        labeljust=c
+        fontname="Arial"
+        fontsize=10
+        fontcolor="#c4b5fd"
+        color="#6d28d9"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#1a0533"
+
+        mean_t [label="Mean\nx' = F . x", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+        cov_t [label="Covariance\nS' = F.S.F^T", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+        opacity_t [label="Opacity\no' = o/det(F)", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+    }
+
+    // Render
+    render [label="Render\nDeformed Scene\n(Real-time)", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Material note
+    materials [label="Neo-Hookean\nDrucker-Prager\nViscous Fluid", fillcolor="#1f2937", fontcolor="#6b7280", shape=note]
+
+    // Edges
+    scene -> embed [label="each Gaussian\n= 1 particle"]
+    embed -> consti [label="material\nparams"]
+    consti -> mpm [label="stress\ntensor"]
+    mpm -> defgrad [label="updated\nstate"]
+    defgrad -> mean_t
+    defgrad -> cov_t
+    defgrad -> opacity_t
+    mean_t -> render
+    cov_t -> render
+    opacity_t -> render
+    materials -> consti [style=dotted, arrowhead=none, color="#4a5568"]
+}

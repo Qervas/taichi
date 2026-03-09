@@ -1,0 +1,51 @@
+digraph PACNeRF {
+    bgcolor="transparent"
+    rankdir=LR
+    fontname="Arial"
+    node [fontname="Arial", fontsize=11, fontcolor="#c0c8e0", style="filled,rounded", shape=box, penwidth=0]
+    edge [fontname="Arial", fontsize=9, fontcolor="#8090b0", color="#4a5568"]
+
+    // Cycle layout — use invisible edges to shape the layout
+    // Input
+    video [label="Multi-View\nVideo", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // NeRF
+    nerf [label="NeRF\nReconstruction", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Geometry
+    geom [label="Extract\nGeometry\n(Density)", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // MPM particles
+    init_mpm [label="Initialize\nMPM Particles", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // Differentiable MPM
+    diff_mpm [label="Differentiable\nMPM Forward\n(DiffTaichi)", fillcolor="#065f46", fontcolor="#34d399"]
+
+    // Render
+    render [label="Differentiable\nRendering", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+    // Compare
+    compare [label="Compare\nwith Video\n(MSE Loss)", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Backprop
+    backprop [label="Backprop\nGradients", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+
+    // Update params
+    update [label="Update Physical\nParams (E, v, rho)", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+
+    // Main forward path
+    video -> nerf [label="multi-view\nimages"]
+    nerf -> geom [label="density\nfield"]
+    geom -> init_mpm [label="threshold\nsampling"]
+    init_mpm -> diff_mpm [label="particles\n+ params"]
+    diff_mpm -> render [label="deformed\nparticles"]
+    render -> compare [label="predicted\nframes"]
+
+    // Backward cycle
+    compare -> backprop [label="pixel\nerror", color="#ef4444", fontcolor="#ef4444"]
+    backprop -> update [label="grad E,v,rho", color="#ef4444", fontcolor="#ef4444"]
+    update -> diff_mpm [label="iterate until\nconverge", color="#ef4444", fontcolor="#ef4444", style=dashed]
+
+    // Video feeds into compare
+    video -> compare [style=dashed, label="ground\ntruth", constraint=false, color="#6b7280"]
+}

@@ -1,0 +1,59 @@
+digraph PhysTwin {
+    bgcolor="transparent"
+    rankdir=TB
+    fontname="Arial"
+    node [fontname="Arial", fontsize=11, fontcolor="#c0c8e0", style="filled,rounded", shape=box, penwidth=0]
+    edge [fontname="Arial", fontsize=9, fontcolor="#8090b0", color="#4a5568"]
+
+    // Phase 1: Visual Reconstruction
+    subgraph cluster_phase1 {
+        label="Phase 1: Visual Reconstruction"
+        labeljust=l
+        fontname="Arial"
+        fontsize=11
+        fontcolor="#60a5fa"
+        color="#1e40af"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#0c1929"
+
+        rgbd [label="RGBD Video\n(Single View)", fillcolor="#92400e", fontcolor="#fbbf24"]
+        sam [label="Segment\n(SAM2)", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+        track [label="Track Motion\n(CoTracker)", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+        gs_init [label="3DGS Init\n+ Depth", fillcolor="#1e3a5f", fontcolor="#60a5fa"]
+
+        rgbd -> sam [label="frames"]
+        rgbd -> track [label="frames"]
+        sam -> gs_init [label="object\nmask"]
+        track -> gs_init [label="point\ntracks"]
+    }
+
+    // Phase 2: Physics Optimization
+    subgraph cluster_phase2 {
+        label="Phase 2: Physics Optimization"
+        labeljust=l
+        fontname="Arial"
+        fontsize=11
+        fontcolor="#34d399"
+        color="#065f46"
+        style="rounded,dashed"
+        penwidth=1.5
+        bgcolor="#041f15"
+
+        contact [label="GNN Contact\nEstimator", fillcolor="#4c1d95", fontcolor="#c4b5fd"]
+        diff_mpm [label="Differentiable\nMPM (Warp)", fillcolor="#065f46", fontcolor="#34d399"]
+        optimize [label="Optimize\nE, v Params", fillcolor="#065f46", fontcolor="#34d399"]
+
+        contact -> diff_mpm [label="contact\nforces"]
+        diff_mpm -> optimize [label="sim vs\nobserved"]
+        optimize -> diff_mpm [label="update", color="#ef4444", fontcolor="#ef4444", style=dashed]
+    }
+
+    // Output
+    twin [label="Digital Twin\n(Interactive)\n17 FPS, IoU 84%", fillcolor="#92400e", fontcolor="#fbbf24"]
+
+    // Cross-phase edges
+    gs_init -> contact [label="3D Gaussians\n+ geometry"]
+    gs_init -> diff_mpm [label="initial\nparticles"]
+    optimize -> twin [label="calibrated\nparams"]
+}
