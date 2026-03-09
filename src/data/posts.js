@@ -1,6 +1,17 @@
 /* ━━━━━━━━━━━━━━━━━━━━ STATIC DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export const POSTS = [
   {
+    id: 12,
+    phase: "Survey V2",
+    title: "AI Physics Simulation Deep Dive",
+    subtitle: "25+ 方法逐一拆解 · 管线 · 核心创新 · 行动建议 · TOC 导航",
+    date: "2026-03-09",
+    categories: ["slides"],
+    description:
+      "Deep-dive V2 of AI physics simulation survey. Full decomposition of 25+ methods: FNO → Poseidon → GNS → NGFF → Walrus → PhysiX (Track A) and PAC-NeRF → GIC → PhysGaussian → OmniPhysGS → i-PhysGaussian → PhysDreamer → PhysTwin → V-JEPA (Track B). Each method: problem → pipeline → key innovation → results → actionable takeaways. Includes TOC sidebar navigation, math equations, and technology roadmap.",
+    slides: "slides-dist/ai-physics-survey-v2/index.html",
+  },
+  {
     id: 11,
     phase: "Survey",
     title: "AI Physics Simulation Survey",
