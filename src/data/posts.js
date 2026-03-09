@@ -1,6 +1,23 @@
 /* ━━━━━━━━━━━━━━━━━━━━ STATIC DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export const POSTS = [
   {
+    id: 13,
+    phase: "Phase 08",
+    title: "Building Destruction + Flood",
+    subtitle: "Hybrid SWE + MPM · Rankine Fracture · Soaking Erosion · Blender Rendering",
+    date: "2026-03-09",
+    categories: ["slides", "code"],
+    description:
+      "Hybrid SWE + MPM simulation: 2D shallow water (256² HLLC/MUSCL) drives 3D MLS-MPM building fracture (128³ grid). Corotational elastic + Rankine tensile failure + exponential softening. Soaking erosion weakens submerged concrete → gravity-driven pancake collapse. SWE→MPM coupling: buoyancy + drag + wall pressure. 60 Voronoi chunks, 10 cars (Neo-Hookean), Blender offline rendering. 3000+ lines, 8-module solver architecture.",
+    slides: "slides-dist/phase8-building-flood/index.html",
+    code: "code/phase8",
+    codeFiles: [
+      "run.py", "config.py", "solver/hybrid.py", "solver/swe.py",
+      "solver/engine.py", "solver/coupling.py", "solver/fields.py",
+      "solver/materials.py", "solver/colliders.py",
+    ],
+  },
+  {
     id: 12,
     phase: "Survey V2",
     title: "AI Physics Simulation Survey V2",
