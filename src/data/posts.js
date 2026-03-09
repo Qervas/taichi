@@ -3,7 +3,7 @@ export const POSTS = [
   {
     id: 12,
     phase: "Survey V2",
-    title: "AI Physics Simulation Deep Dive",
+    title: "AI Physics Simulation Survey V2",
     subtitle: "25+ 方法逐一拆解 · 管线 · 核心创新 · 行动建议 · TOC 导航",
     date: "2026-03-09",
     categories: ["slides"],
