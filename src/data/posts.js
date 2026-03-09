@@ -8,7 +8,7 @@ export const POSTS = [
     date: "2026-03-09",
     categories: ["slides"],
     description:
-      "Deep-dive V2 of AI physics simulation survey. Full decomposition of 25+ methods: FNO → Poseidon → GNS → NGFF → Walrus → PhysiX (Track A) and PAC-NeRF → GIC → PhysGaussian → OmniPhysGS → i-PhysGaussian → PhysDreamer → PhysTwin → V-JEPA (Track B). Each method: problem → pipeline → key innovation → results → actionable takeaways. Includes TOC sidebar navigation, math equations, and technology roadmap.",
+      "Deep-dive V2 of AI physics simulation survey. Full decomposition of 25+ methods: FNO → Poseidon → GNS → NGFF → Walrus → PhysiX (Track A) and PAC-NeRF → GIC → PhysGaussian → OmniPhysGS → i-PhysGaussian → PhysDreamer → PhysTwin → RealWonder → V-JEPA (Track B). Each method: problem → pipeline → key innovation → results → actionable takeaways. Includes TOC sidebar navigation, math equations, and technology roadmap.",
     slides: "slides-dist/ai-physics-survey-v2/index.html",
   },
   {
