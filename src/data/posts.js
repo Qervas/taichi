@@ -6,9 +6,11 @@ export const POSTS = [
     title: "Building Destruction + Flood",
     subtitle: "Hybrid SWE + MPM · Rankine Fracture · Soaking Erosion · Blender Rendering",
     date: "2026-03-09",
-    categories: ["slides", "code"],
+    categories: ["slides", "vids", "code"],
     description:
       "Hybrid SWE + MPM simulation: 2D shallow water (256² HLLC/MUSCL) drives 3D MLS-MPM building fracture (128³ grid). Corotational elastic + Rankine tensile failure + exponential softening. Soaking erosion weakens submerged concrete → gravity-driven pancake collapse. SWE→MPM coupling: buoyancy + drag + wall pressure. 60 Voronoi chunks, 10 cars (Neo-Hookean), Blender offline rendering. 3000+ lines, 8-module solver architecture.",
+    video: "videos/phase8-building-flood.mp4",
+    thumb: "videos/thumbs/phase8-building-flood.jpg",
     slides: "slides-dist/phase8-building-flood/index.html",
     code: "code/phase8",
     codeFiles: [
