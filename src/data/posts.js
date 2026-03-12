@@ -1,6 +1,24 @@
 /* ━━━━━━━━━━━━━━━━━━━━ STATIC DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export const POSTS = [
   {
+    id: 14,
+    phase: "Phase 09",
+    title: "3D Rising Flood",
+    subtitle: "MLS-MPM · SDF Mesh Collision · SplashSurf · Blender Cycles",
+    date: "2026-03-11",
+    categories: ["slides", "vids", "code"],
+    description:
+      "3D MLS-MPM rising flood simulation: 128³ grid, up to 4M water particles with J-based EOS pressure. GLB building model → trimesh voxelization → scipy EDT signed distance field for smooth slip boundary conditions. Two-phase injection (prefill + linear rise) with SDF-aware filtering. Rendering pipeline: PLY export → SplashSurf isosurface reconstruction → Blender Cycles with photorealistic turbid flood water material, Hosek-Wilkie procedural sky, edge-fade shader, and infinite flood base plane. 300 frames, 1920×1080.",
+    video: "videos/phase9-rising-flood.mp4",
+    thumb: "videos/thumbs/phase9-rising-flood.jpg",
+    slides: "slides-dist/phase9-rising-flood/index.html",
+    code: "code/phase9",
+    codeFiles: [
+      "run.py", "config.py", "solver.py",
+      "blender_render.py", "mesh_surface.py", "mesh_particles.py",
+    ],
+  },
+  {
     id: 13,
     phase: "Phase 08",
     title: "Building Destruction + Flood",
