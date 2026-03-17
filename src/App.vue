@@ -1,35 +1,45 @@
 <template>
-  <AppHeader />
+  <AppHeader v-model:view="currentView" />
 
-  <div class="wrap">
-    <aside class="sidebar">
-      <SidebarCalendar v-model:activeDate="activeDate" />
-      <SidebarStats />
-    </aside>
+  <!-- Posts view -->
+  <template v-if="currentView === 'posts'">
+    <div class="wrap">
+      <aside class="sidebar">
+        <SidebarCalendar v-model:activeDate="activeDate" />
+        <SidebarStats />
+      </aside>
 
-    <main class="main">
-      <FilterBar v-model:activeCat="activeCat" :resultsMeta="resultsMeta" />
+      <main class="main">
+        <FilterBar v-model:activeCat="activeCat" :resultsMeta="resultsMeta" />
 
-      <div class="posts">
-        <TransitionGroup name="fade">
-          <PostCard
-            v-for="(post, idx) in filteredPosts" :key="post.id"
-            :post="post"
-            :index="idx"
-            @open-slides="openSlides"
-            @open-video="openVideo"
-            @open-code="openCode"
-            @share="sharePost"
-          />
-        </TransitionGroup>
-      </div>
+        <div class="posts">
+          <TransitionGroup name="fade">
+            <PostCard
+              v-for="(post, idx) in filteredPosts" :key="post.id"
+              :post="post"
+              :index="idx"
+              @open-slides="openSlides"
+              @open-video="openVideo"
+              @open-code="openCode"
+              @share="sharePost"
+            />
+          </TransitionGroup>
+        </div>
 
-      <div v-if="filteredPosts.length === 0" class="empty">
-        <div class="empty-icon">&#9670;</div>
-        No posts match the current filter.
-      </div>
-    </main>
-  </div>
+        <div v-if="filteredPosts.length === 0" class="empty">
+          <div class="empty-icon">&#9670;</div>
+          No posts match the current filter.
+        </div>
+      </main>
+    </div>
+  </template>
+
+  <!-- Code Explorer view -->
+  <CodeExplorer
+    v-if="currentView === 'code'"
+    :projects="PROJECTS"
+    :initialProject="initialProjectId"
+  />
 
   <SlidesModal
     :open="modal.open"
@@ -57,8 +67,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
-import { POSTS, fmtDate } from './data/posts.js'
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { POSTS, PROJECTS, fmtDate } from './data/posts.js'
 import AppHeader from './components/AppHeader.vue'
 import SidebarCalendar from './components/SidebarCalendar.vue'
 import SidebarStats from './components/SidebarStats.vue'
@@ -67,6 +77,11 @@ import PostCard from './components/PostCard.vue'
 import SlidesModal from './components/SlidesModal.vue'
 import VideoModal from './components/VideoModal.vue'
 import CodeModal from './components/CodeModal.vue'
+import CodeExplorer from './components/CodeExplorer.vue'
+
+/* ── View toggle ── */
+const currentView = ref('posts')
+const initialProjectId = ref(null)
 
 /* ── State ── */
 const activeCat = ref('all')
@@ -150,16 +165,15 @@ function onKey(e) {
   }
 }
 
-onMounted(() => {
-  // Hide page loader
-  const loader = document.getElementById('loader')
-  if (loader) loader.classList.add('hidden')
-
-  window.addEventListener('keydown', onKey)
-
-  // Scroll to linked post if URL has #post-{id}
+/* ── Hash-based routing ── */
+function handleHash() {
   const hash = location.hash
-  if (hash && hash.startsWith('#post-')) {
+  if (hash === '#code' || hash.startsWith('#code/')) {
+    currentView.value = 'code'
+    const projectId = hash.replace('#code/', '').replace('#code', '')
+    if (projectId) initialProjectId.value = projectId
+  } else if (hash && hash.startsWith('#post-')) {
+    currentView.value = 'posts'
     nextTick(() => {
       const el = document.getElementById(hash.slice(1))
       if (el) {
@@ -169,8 +183,26 @@ onMounted(() => {
       }
     })
   }
+}
+
+watch(currentView, (v) => {
+  if (v === 'posts') history.replaceState(null, '', location.pathname)
 })
-onUnmounted(() => window.removeEventListener('keydown', onKey))
+
+onMounted(() => {
+  // Hide page loader
+  const loader = document.getElementById('loader')
+  if (loader) loader.classList.add('hidden')
+
+  window.addEventListener('keydown', onKey)
+  window.addEventListener('hashchange', handleHash)
+
+  handleHash()
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKey)
+  window.removeEventListener('hashchange', handleHash)
+})
 </script>
 
 <style scoped>

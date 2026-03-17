@@ -212,6 +212,58 @@ export const POSTS = [
   },
 ]
 
+/* ━━━━━━━━━━━━━━━━━━━━ PROJECTS (for Code Explorer) ━━━━━━━━━━━━━━ */
+export const PROJECTS = [
+  { id: 'phase2', phase: 'Phase 02', title: '2D Water Dam Break', code: 'code/phase2_water.py', codeFiles: null },
+  { id: 'phase3', phase: 'Phase 03', title: '3D Bridge Destruction', code: 'code/phase3_3d.py', codeFiles: null },
+  { id: 'phase4', phase: 'Phase 04', title: 'Flood vs. Concrete Bridge', code: 'code/phase4_flood.py', codeFiles: null },
+  { id: 'phase5-single', phase: 'Phase 05', title: 'Water Wheel', code: 'code/phase5_wheel.py', codeFiles: null },
+  { id: 'phase5', phase: 'Phase 05', title: 'Water Wheel (Multi-file)', code: 'code/phase5', codeFiles: ['run.py', 'blender_render.py'] },
+  {
+    id: 'phase6', phase: 'Phase 06', title: 'Flood Rendering Pipeline', code: 'code/phase6',
+    codeFiles: [
+      'run.py', 'renderer.py', 'terrain.py',
+      'shaders/water.frag', 'shaders/water.vert',
+      'shaders/terrain.frag', 'shaders/terrain.vert',
+      'shaders/sky.frag', 'shaders/sky.vert',
+      'shaders/post.frag', 'shaders/post.vert',
+    ],
+  },
+  { id: 'phase7', phase: 'Phase 07', title: 'City Flood Simulation', code: 'code/phase7', codeFiles: ['run.py', 'car_coupling.py', 'city_data.py'] },
+  {
+    id: 'phase8', phase: 'Phase 08', title: 'Building Destruction + Flood', code: 'code/phase8',
+    codeFiles: [
+      'run.py', 'config.py', 'solver/hybrid.py', 'solver/swe.py',
+      'solver/engine.py', 'solver/coupling.py', 'solver/fields.py',
+      'solver/materials.py', 'solver/colliders.py',
+    ],
+  },
+  {
+    id: 'phase9', phase: 'Phase 09', title: '3D Rising Flood', code: 'code/phase9',
+    codeFiles: ['run.py', 'config.py', 'solver.py', 'blender_render.py', 'mesh_surface.py', 'mesh_particles.py'],
+  },
+  {
+    id: 'phase10', phase: 'Phase 10', title: 'Town Flood Simulation', code: 'code/phase10',
+    codeFiles: [
+      'run.py', 'config.py', 'solver.py', 'gen_heightmaps.py', 'generate_town.py',
+      'scan_buildings.py', 'render_preview.py', 'blender_render.py',
+      'blender_render_fast.py', 'blender_render_town.py',
+    ],
+  },
+  {
+    id: 'phase11', phase: 'Phase 11', title: 'FLIP Solver Pipeline', code: 'code/phase11',
+    codeFiles: [
+      'Makefile',
+      'sim/config.py', 'sim/solver.py', 'sim/flip_solver.py', 'sim/mgpcg.py', 'sim/warp_pbf.py',
+      'mesh/mesh_surface.py', 'mesh/mesh_batch.py', 'mesh/mesh_warp.py', 'mesh/gpu_mesh_warp.py', 'mesh/gpu_mesh.cu',
+      'render/blender_render.py', 'render/blender_render_eevee.py', 'render/blender_render_fast.py',
+      'render/batch_render.sh', 'render/render_pour.sh',
+      'scripts/run.py', 'scripts/run_pipeline.py', 'scripts/run_rising_tide.py',
+      'scripts/sim_water_pour.py', 'scripts/sim_water_pour_server.py',
+    ],
+  },
+]
+
 export const STATS = [
   { k: "Framework", v: "Taichi Lang" },
 ]
