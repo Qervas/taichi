@@ -1,6 +1,26 @@
 /* ━━━━━━━━━━━━━━━━━━━━ STATIC DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export const POSTS = [
   {
+    id: 15,
+    phase: "Phase 11",
+    title: "FLIP Flood Simulation",
+    subtitle: "MAC Grid · MGPCG Pressure Solver · FLIP/PIC · SplashSurf · Blender Cycles",
+    date: "2026-03-17",
+    categories: ["code"],
+    description:
+      "SOTA 3D flood simulation using FLIP (Fluid Implicit Particle) on a 192³ MAC staggered grid with up to 10M particles. MGPCG pressure Poisson solver with multigrid preconditioner — 50× fewer substeps than MLS-MPM thanks to implicit pressure projection. 97% FLIP / 3% PIC blend for low dissipation, RK2 midpoint advection, trilinear P2G/G2P on staggered faces, velocity extrapolation for free-surface particles, SDF-based solid obstacles, and per-particle foam tagging. Full pipeline: sim → SplashSurf surface reconstruction → Blender Cycles rendering. Includes CUDA GPU meshing, batch render scripts, and multiple simulation scenarios (directional flood, rising tide, water pour).",
+    code: "code/phase11",
+    codeFiles: [
+      "Makefile",
+      "sim/config.py", "sim/solver.py", "sim/flip_solver.py", "sim/mgpcg.py", "sim/warp_pbf.py",
+      "mesh/mesh_surface.py", "mesh/mesh_batch.py", "mesh/mesh_warp.py", "mesh/gpu_mesh_warp.py", "mesh/gpu_mesh.cu",
+      "render/blender_render.py", "render/blender_render_eevee.py", "render/blender_render_fast.py",
+      "render/batch_render.sh", "render/render_pour.sh",
+      "scripts/run.py", "scripts/run_pipeline.py", "scripts/run_rising_tide.py",
+      "scripts/sim_water_pour.py", "scripts/sim_water_pour_server.py",
+    ],
+  },
+  {
     id: 14,
     phase: "Phase 09",
     title: "3D Rising Flood",
@@ -241,14 +261,6 @@ export const PROJECTS = [
   {
     id: 'phase9', phase: 'Phase 09', title: '3D Rising Flood', code: 'code/phase9',
     codeFiles: ['run.py', 'config.py', 'solver.py', 'blender_render.py', 'mesh_surface.py', 'mesh_particles.py'],
-  },
-  {
-    id: 'phase10', phase: 'Phase 10', title: 'Town Flood Simulation', code: 'code/phase10',
-    codeFiles: [
-      'run.py', 'config.py', 'solver.py', 'gen_heightmaps.py', 'generate_town.py',
-      'scan_buildings.py', 'render_preview.py', 'blender_render.py',
-      'blender_render_fast.py', 'blender_render_town.py',
-    ],
   },
   {
     id: 'phase11', phase: 'Phase 11', title: 'FLIP Solver Pipeline', code: 'code/phase11',
