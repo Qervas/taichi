@@ -1,6 +1,17 @@
 /* ━━━━━━━━━━━━━━━━━━━━ STATIC DATA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export const POSTS = [
   {
+    id: 16,
+    phase: "Survey",
+    title: "Sim Paper Rendering Pipelines",
+    subtitle: "SIGGRAPH 2024–2026 · SPH/MPM/FLIP → SplashSurf/Houdini/3DGS · 50+ Papers",
+    date: "2026-03-18",
+    categories: ["slides"],
+    description:
+      "How do simulation papers render their results? Survey of 50+ physics simulation papers (SIGGRAPH 2024/2025, SIGGRAPH Asia 2024/2025, Eurographics 2025, SCA 2025, 2026 preprints). Covers four rendering pipelines: SPH→SplashSurf→Blender Cycles, Grid→OpenVDB→Houdini, Taichi GGUI real-time, and the emerging 3D Gaussian Splatting paradigm. Key finding: 70% of sim papers don't document rendering. Our SplashSurf+Blender pipeline is the verified academic SOTA. Biggest trend: 3DGS+MPM eliminates surface reconstruction entirely (PhysGaussian, VR-GS, GaussianFluent, i-PhysGaussian).",
+    slides: "slides-dist/sim-rendering-survey/index.html",
+  },
+  {
     id: 15,
     phase: "Phase 11",
     title: "FLIP Flood Simulation",
